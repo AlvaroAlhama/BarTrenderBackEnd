@@ -28,10 +28,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'main',
+    'discounts',
 ]
 
 MODULES = [
     'main',
+    'discounts',
 ]
 
 MIDDLEWARE = [

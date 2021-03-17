@@ -8,5 +8,5 @@ urlpatterns = [
 
 for module in settings.MODULES:
     urlpatterns += [
-        path('{}/'.format(module), include('{}.urls'.format(module)))
+        path('v1/{}/'.format(module), include('{}.urls'.format(module)))
     ]
