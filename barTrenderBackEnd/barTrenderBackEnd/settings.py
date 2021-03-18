@@ -29,11 +29,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'main',
     'authentication',
+    'search',
 ]
 
 MODULES = [
     'main',
     'authentication',
+    'search',
 ]
 
 MIDDLEWARE = [
