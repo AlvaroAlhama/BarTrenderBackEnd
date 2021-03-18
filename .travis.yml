@@ -1,0 +1,13 @@
+language: python 
+python: 
+- "3.9"
+env: 
+- DJANGO=3.1.7 DB=sqlite
+install:
+  - pip install -r requirements.txt
+  - pip install codacy-coverage
+script:
+  - cd barTrenderBackEnd
+  - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
