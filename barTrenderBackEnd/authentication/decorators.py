@@ -29,8 +29,8 @@ def apikey_required(view_func):
 
 def token_required(rol):
     def wrapper(view_func):
-        def wrapped(self, request):
-
+        def wrapped(self, request, **kwargs):
+            
             try:
                 token = request.headers["token"]
             except:
@@ -40,7 +40,7 @@ def token_required(rol):
             if error :
                 return Response({"error": error}, HTTP_401_UNAUTHORIZED)
 
-            return view_func(self, request)
+            return view_func(self, request, **kwargs)
 
         return wrapped
     return wrapper
