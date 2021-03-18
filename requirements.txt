@@ -4,3 +4,4 @@ django-cors-headers
 qrcode
 pillow
 pyjwt
+coverage
