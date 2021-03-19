@@ -16,6 +16,20 @@ class Client(models.Model):
     def __str__(self):
         return "Client: " + self.user.username
 
+class Type(models.TextChoices):
+    B = "Bebida"
+    E = "Estilo"
+    I = "Instalación"
+    O = "Ocio"
+    T = "Tapa"
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    type_enum = models.CharField(blank=False, null=False, max_length=25, choices=Type.choices)
+
+    def __str__(self):
+        return "Tag: " + self.name + " Type: " + self.type_enum
+
 class Zone(models.TextChoices):
     AL = "Alameda"
     TR = "Triana"
@@ -46,6 +60,7 @@ class Establishment(models.Model):
     zone_enum = models.CharField(blank=False, null=False, max_length=25, choices=Zone.choices)
     verified_bool = models.BooleanField(default=False)
     owner = models.OneToOneField(Owner, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return "Establisment: " + self.name_text
