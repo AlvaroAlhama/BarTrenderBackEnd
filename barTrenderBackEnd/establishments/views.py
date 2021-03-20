@@ -22,6 +22,5 @@ class Discounts(APIView):
             return validations
 
         # Return correct QR
-
         qr = generate_qr(token, establishment_id, discount_id)
         return HttpResponse(qr, status="200", content_type="image/png")

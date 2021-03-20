@@ -1,7 +1,7 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator
 from authentication.models import *
-
+from .validators import *
 
 # ENUM
 
@@ -43,7 +43,8 @@ class Establishment(models.Model):
         RegexValidator(
             regex='^[a-zA-Z]{1}\d{7}[a-zA-Z0-9]{1}$',
             message='It does not match with CIF pattern.'
-        )
+        ),
+        validate_cif
     ])
     phone_number = models.IntegerField(blank=False, null=False, unique=True, validators=[
         RegexValidator(
@@ -54,7 +55,7 @@ class Establishment(models.Model):
     zone_enum = models.CharField(blank=False, null=False, max_length=25, choices=Zone.choices)
     verified_bool = models.BooleanField(default=False)
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return "Establisment: " + self.name_text
@@ -63,15 +64,25 @@ class Establishment(models.Model):
 class Discount(models.Model):
     name_text = models.CharField(max_length=50, blank=False, null=False)
     description_text = models.CharField(max_length=140)
-    cost_number = models.FloatField(blank=False, null=False, default=0.0)
+    cost_number = models.FloatField(blank=False, null=False, default=0.0, validators=[
+        MinValueValidator(0.0)
+    ])
     totalCodes_number = models.PositiveIntegerField(blank=True, null=True)
     scannedCodes_number = models.PositiveIntegerField(default=0, blank=False, null=False)
-    initial_date = models.DateTimeField(blank=False, null=False)
+    initial_date = models.DateTimeField(blank=False, null=False, validators=[date_is_before_now])
     end_date = models.DateTimeField(blank=True, null=True)
 
     # Relations
     clients_id = models.ManyToManyField(Client, blank=True, null=True)
     establishment_id = models.ForeignKey(Establishment, on_delete=models.CASCADE)
+
+    def clean(self):
+        validate_date(self)
+        return self
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(Discount, self).save(*args, **kwargs)
 
     def __str__(self):
         return "Discount: " + self.name_text + "( Id Establecimiento: " + str(self.establishment_id.id) + ")"
