@@ -37,7 +37,8 @@ class login(APIView):
 
         response = {
             'token': token,
-            'expiresIn': expiresIn
+            'expiresIn': expiresIn,
+            'rol': rol
         }
 
         return Response(response, HTTP_200_OK)
@@ -45,7 +46,6 @@ class login(APIView):
 class testAll(APIView):
     @token_required('all')
     def get(self, request):
-
         return Response("Has accedido!", HTTP_200_OK)
 
 class testOwner(APIView):

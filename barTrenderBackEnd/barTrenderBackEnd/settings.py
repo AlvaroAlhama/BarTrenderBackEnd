@@ -30,16 +30,19 @@ INSTALLED_APPS = [
     'main',
     'authentication',
     'establishments',
-
+    'search',
 ]
 
 MODULES = [
     'main',
     'authentication',
     'establishments',
+    'search',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -47,8 +50,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -60,6 +61,19 @@ CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5000',
   # Add the url when deployed
 ]
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'apiKey',
+    'token'
+)
 
 ROOT_URLCONF = 'barTrenderBackEnd.urls'
 TEMPLATES = [

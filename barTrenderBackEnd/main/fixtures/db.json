@@ -1,0 +1,204 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$PeWkwVCE7Lvm$7sM8lU/+/Lxq3dlW7PJpRYIyRHpj/Mm3sdo34oCrHXY=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "client1@email.com",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2021-03-17T20:00:27Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authentication.client",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "birthday": "2000-03-17"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$PeWkwVCE7Lvm$7sM8lU/+/Lxq3dlW7PJpRYIyRHpj/Mm3sdo34oCrHXY=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "client2@email.com",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2021-03-17T20:00:27Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authentication.client",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "birthday": "2000-03-17"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 3,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$FNKWOsI5gfbs$B43b+rhRtx1B1xXor5g68Mc2gqKtVQfROxFfgBRng1k=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "owner1@email.com",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2021-03-17T20:01:03Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authentication.owner",
+        "pk": 1,
+        "fields": {
+            "user": 3,
+            "phone": 954852654
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$FNKWOsI5gfbs$B43b+rhRtx1B1xXor5g68Mc2gqKtVQfROxFfgBRng1k=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "owner2@email.com",
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2021-03-17T20:01:03Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authentication.owner",
+        "pk": 2,
+        "fields": {
+            "user": 4,
+            "phone": 954852655
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 10000,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$piMp2CBrmPbb$D7P85r/HgKH9DRwMDzcXdk03IJm8QbsaMPOoBKDH6mI=",
+            "last_login": "2021-03-18T16:53:48.921Z",
+            "is_superuser": true,
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
+            "email": "admin@admin.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2021-03-17T19:57:19.723Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+
+
+    {
+        "model": "authentication.establishment",
+        "pk": 1,
+        "fields": {
+            "name": "Bar 1",
+            "cif": "F04416038",
+            "phone": 654585235,
+            "zone": "Remedios",
+            "verified": true,
+            "owner": 1,
+            "tags": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "authentication.establishment",
+        "pk": 2,
+        "fields": {
+            "name": "Bar 2",
+            "cif": "P4038715A",
+            "phone": 978456123,
+            "zone": "Triana",
+            "verified": false,
+            "owner": 2,
+            "tags": []
+        }
+    },
+    {
+        "model": "authentication.establishment",
+        "pk": 3,
+        "fields": {
+            "name": "Bar 3",
+            "cif": "B11095965",
+            "phone": 978456124,
+            "zone": "Triana",
+            "verified": false,
+            "owner": 2,
+            "tags": [
+                3
+            ]
+        }
+    },
+
+
+    {
+        "model": "authentication.tag",
+        "pk": 1,
+        "fields": {
+            "name": "Cruzcampo",
+            "type": "Bebida"
+        }
+    },
+    {
+        "model": "authentication.tag",
+        "pk": 2,
+        "fields": {
+            "name": "Paulaner",
+            "type": "Bebida"
+        }
+    },
+    {
+        "model": "authentication.tag",
+        "pk": 3,
+        "fields": {
+            "name": "Billar",
+            "type": "Instalación"
+        }
+    },
+    {
+        "model": "authentication.tag",
+        "pk": 4,
+        "fields": {
+            "name": "Dardos",
+            "type": "Instalación"
+        }
+    }
+    
+]

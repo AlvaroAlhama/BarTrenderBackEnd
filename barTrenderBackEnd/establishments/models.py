@@ -2,6 +2,17 @@ from django.db import models
 from django.core.validators import RegexValidator
 from authentication.models import *
 
+
+# ENUM
+
+class Type(models.TextChoices):
+    B = "Bebida"
+    E = "Estilo"
+    I = "Instalación"
+    O = "Ocio"
+    T = "Tapa"
+
+
 class Zone(models.TextChoices):
     AL = "Alameda"
     TR = "Triana"
@@ -14,6 +25,16 @@ class Zone(models.TextChoices):
     SE = "Sevilla Este"
     BE = "Bellavista"
     EX = "Exterior"
+
+
+# MODELS
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    type = models.CharField(blank=False, null=False, max_length=25, choices=Type.choices)
+
+    def __str__(self):
+        return "Tag: " + self.name + " Type: " + self.type
 
 
 class Establishment(models.Model):
@@ -32,6 +53,11 @@ class Establishment(models.Model):
     ])
     zone_enum = models.CharField(blank=False, null=False, max_length=25, choices=Zone.choices)
     verified_bool = models.BooleanField(default=False)
+    owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag)
+
+    def __str__(self):
+        return "Establisment: " + self.name_text
 
 
 class Discount(models.Model):
@@ -46,6 +72,9 @@ class Discount(models.Model):
     # Relations
     clients_id = models.ManyToManyField(Client, blank=True, null=True)
     establishment_id = models.ForeignKey(Establishment, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Discount: " + self.name_text + "( Id Establecimiento: " + str(self.establishment_id.id) + ")"
 
 
 # TODO: Intermediate Table that references: Users, Establishments and Discounts (manage num of scanned codes)

@@ -7,6 +7,7 @@ SECRET = "secreto"
 HOURS = 1
 
 def getRol(user):
+    
     try:
         Client.objects.get(user=user)
         return "client"

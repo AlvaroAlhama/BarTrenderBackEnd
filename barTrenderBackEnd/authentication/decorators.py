@@ -15,7 +15,7 @@ from rest_framework.status import (
 APIKEY = "apikeytest"
 
 def apikey_required(view_func):
-    def wrapped(self, request):
+    def wrapped(self, request, **kwargs):
         try:
             apiKey = request.headers["apiKey"]
         except:
@@ -23,14 +23,14 @@ def apikey_required(view_func):
             
         if apiKey != APIKEY:
             return Response({"error": "A400"}, HTTP_401_UNAUTHORIZED)
-        return view_func(self, request)
+        return view_func(self, request, **kwargs)
 
     return wrapped
 
 def token_required(rol):
     def wrapper(view_func):
-        def wrapped(self, request):
-
+        def wrapped(self, request, **kwargs):
+            
             try:
                 token = request.headers["token"]
             except:
@@ -40,7 +40,7 @@ def token_required(rol):
             if error :
                 return Response({"error": error}, HTTP_401_UNAUTHORIZED)
 
-            return view_func(self, request)
+            return view_func(self, request, **kwargs)
 
         return wrapped
     return wrapper
