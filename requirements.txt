@@ -5,3 +5,5 @@ qrcode
 pillow
 pyjwt
 coverage
+django-heroku
+gunicorn
