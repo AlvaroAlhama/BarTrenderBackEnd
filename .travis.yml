@@ -16,4 +16,6 @@ deploy:
   - strategy: git
   - api_key: $HEROKU_API_KEY
   - app: 
-    develop: https://bartrender-back-dev-s1.herokuapp.com/	
+    - develop: https://bartrender-back-dev-s1.herokuapp.com/	
+    - on:
+      - branch: develop
