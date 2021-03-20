@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
-
+from authentication.models import *
 
 class Zone(models.TextChoices):
     AL = "Alameda"
@@ -44,6 +44,7 @@ class Discount(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
 
     # Relations
+    clients_id = models.ManyToManyField(Client, blank=True, null=True)
     establishment_id = models.ForeignKey(Establishment, on_delete=models.CASCADE)
 
 
