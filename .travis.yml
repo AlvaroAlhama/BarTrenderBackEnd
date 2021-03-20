@@ -13,12 +13,14 @@ script:
   - python-codacy-coverage -r coverage.xml
 deploy:
   - provider: heroku
+    skin_cleanup: true
     app: https://bartrender-back-dev-s1.herokuapp.com/
     strategy: git
     api_key: $HEROKU_API_KEY
     on:
       branch: develop
   - provider: heroku
+    skin_cleanup: true
     app: https://bartrender-back-s1.herokuapp.com/
     strategy: git
     api_key: $HEROKU_API_KEY
