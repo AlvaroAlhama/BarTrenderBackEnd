@@ -29,12 +29,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'main',
     'authentication',
+    'establishments',
     'search',
 ]
 
 MODULES = [
     'main',
     'authentication',
+    'establishments',
     'search',
 ]
 

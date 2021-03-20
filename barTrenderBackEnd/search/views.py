@@ -8,7 +8,7 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 from authentication.decorators import token_required
-from authentication.models import Establishment, Tag
+from establishments.models import *
 
 class getEstablishments(APIView):
     @token_required('all')
