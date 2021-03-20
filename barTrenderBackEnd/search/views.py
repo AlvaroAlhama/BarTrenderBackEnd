@@ -8,20 +8,23 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 from authentication.decorators import token_required
-from authentication.models import Establishment
+from authentication.models import Establishment, Tag
 
 class getEstablishments(APIView):
     @token_required('all')
     def post(self, request):
 
         #Get data from request
-        data = request.data
+        filters = request.data["filters"]
 
         #Filter by zone if exist
-        zone_filter = {} if not "zone" in data else {'zone_enum': data["zone"]}
+        zone_filter = {} if not "zones" in filters else {'zone_enum__in': filters["zones"]}
+
+        #Filter by beer
+        beer_filter = {} if not "beers" in filters else {'tags__in': Tag.objects.filter(name__in = filters["beers"], type_enum="Bebida")}
 
         #Search establishments
-        establishments = Establishment.objects.filter(**zone_filter).values('name_text', 'zone_enum', 'phone_number')
+        establishments = Establishment.objects.filter(**zone_filter).filter(**beer_filter).values('name_text', 'zone_enum', 'phone_number')
 
         response = {
             'establishments' : establishments
