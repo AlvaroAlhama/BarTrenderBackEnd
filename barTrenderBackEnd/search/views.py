@@ -18,13 +18,13 @@ class getEstablishments(APIView):
         filters = request.data["filters"]
 
         #Filter by zone if exist
-        zone_filter = {} if not "zones" in filters else {'zone_enum__in': filters["zones"]}
+        zone_filter = {} if not "zones" in filters else {'zone__in': filters["zones"]}
 
         #Filter by beer
-        beer_filter = {} if not "beers" in filters else {'tags__in': Tag.objects.filter(name__in = filters["beers"], type_enum="Bebida")}
+        beer_filter = {} if not "beers" in filters else {'tags__in': Tag.objects.filter(name__in=filters["beers"], type="Bebida")}
 
         #Search establishments
-        establishments = Establishment.objects.filter(**zone_filter).filter(**beer_filter).values('name_text', 'zone_enum', 'phone_number')
+        establishments = Establishment.objects.filter(**zone_filter).filter(**beer_filter).values('name', 'zone', 'phone')
 
         response = {
             'establishments' : establishments

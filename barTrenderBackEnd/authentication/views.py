@@ -37,7 +37,8 @@ class login(APIView):
 
         response = {
             'token': token,
-            'expiresIn': expiresIn
+            'expiresIn': expiresIn,
+            'rol': rol
         }
 
         return Response(response, HTTP_200_OK)
