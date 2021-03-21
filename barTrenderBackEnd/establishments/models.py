@@ -8,7 +8,7 @@ from .validators import *
 class Type(models.TextChoices):
     B = "Bebida"
     E = "Estilo"
-    I = "Instalación"
+    I = "Instalacion"
     O = "Ocio"
     T = "Tapa"
 
@@ -58,7 +58,7 @@ class Establishment(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
-        return "Establisment: " + self.name_text
+        return "Establishment: " + self.name_text
 
 
 class Discount(models.Model):
