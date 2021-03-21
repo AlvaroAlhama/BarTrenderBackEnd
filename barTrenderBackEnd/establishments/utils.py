@@ -52,6 +52,16 @@ def validate_params(token, establishment_id, discount_id):
         return generate_response("D001", '404')
 
 
+def validate_establishment(token, establishment_id):
+
+    # Validate Establishment
+    try:
+        Establishment.objects.get(id=establishment_id)
+    except Establishment.DoesNotExist:
+        # Error: object does not exist, return 404
+        return generate_response("E001", '404')
+
+
 def validate_conditions(request, discount_id):
 
     # User
