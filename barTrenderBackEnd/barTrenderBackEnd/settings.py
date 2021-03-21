@@ -27,17 +27,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'main',
     'authentication',
     'establishments',
-    'search',
 ]
 
 MODULES = [
-    'main',
     'authentication',
     'establishments',
-    'search',
 ]
 
 MIDDLEWARE = [

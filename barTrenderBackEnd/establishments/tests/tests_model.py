@@ -42,7 +42,7 @@ def create_discount(
         cost_number=costs,
         totalCodes_number=total_codes,
         scannedCodes_number=scanned_codes,
-        initial_date=initial_date+datetime.timedelta(days=40),
+        initial_date=initial_date+datetime.timedelta(days=20),
         end_date=end_date,
         establishment_id=establishment
     )
@@ -564,7 +564,7 @@ class DiscountsTestCases(TransactionTestCase):
         client = Client.objects.get(user=User.objects.get(username='client@gmail.com'))
         prev_count = Discount.objects.all().count()
 
-        discount = create_discount(initial_date=timezone.now() - datetime.timedelta(days=40),)
+        discount = create_discount(initial_date=timezone.now() - datetime.timedelta(days=40))
 
         with self.assertRaises(ValidationError) as context:
             if discount.full_clean():
