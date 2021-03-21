@@ -67,8 +67,8 @@ class Discount(models.Model):
     cost_number = models.FloatField(blank=False, null=False, default=0.0, validators=[
         MinValueValidator(0.0)
     ])
-    totalCodes_number = models.PositiveIntegerField(blank=True, null=True)
-    scannedCodes_number = models.PositiveIntegerField(default=0, blank=False, null=False)
+    totalCodes_number = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
+    scannedCodes_number = models.PositiveIntegerField(default=0, blank=False, null=False,  validators=[MinValueValidator(0)])
     initial_date = models.DateTimeField(blank=False, null=False, validators=[date_is_before_now])
     end_date = models.DateTimeField(blank=True, null=True)
 
