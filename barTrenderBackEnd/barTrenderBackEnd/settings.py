@@ -1,4 +1,5 @@
 from pathlib import Path
+import django_heroku
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -57,6 +58,7 @@ CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5000',
   # Add the url when deployed
 ]
+
 CORS_ALLOW_HEADERS = (
     'accept',
     'accept-encoding',
@@ -141,3 +143,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+django_heroku.settings(locals())
