@@ -70,7 +70,7 @@ class Establishments(APIView):
 
         # Search establishments
         establishments = Establishment.objects.filter(**zone_filter).filter(**beer_filter).values(
-            'name_text', 'zone_enum', 'phone_number')
+            'id', 'name_text', 'zone_enum', 'phone_number')
 
         response = {
             'establishments': establishments
