@@ -12,7 +12,7 @@ script:
   - coverage xml
   - python-codacy-coverage -r coverage.xml
 deploy:
-  - provider: heroku
+    provider: heroku
     app: develop-backend-sprint-01
     strategy: git
     api_key: $HEROKU_API_KEY
