@@ -144,4 +144,11 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+BASEURL = "https://develop-backend-sprint-01.herokuapp.com"
+
+APIS = {
+    'authentication': BASEURL,
+    'establishments': BASEURL,
+}
+
 django_heroku.settings(locals())
