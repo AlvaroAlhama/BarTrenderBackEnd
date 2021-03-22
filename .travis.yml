@@ -8,6 +8,8 @@ install:
   - pip install codacy-coverage
 script:
   - cd barTrenderBackEnd
+  - cd barTrenderBackEnd
+  - cp travis_settings.py settings.py
   - coverage run --branch --source=. ./manage.py test establishments.tests.tests_model --keepdb
   - coverage xml
   - python-codacy-coverage -r coverage.xml
