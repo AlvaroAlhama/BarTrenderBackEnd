@@ -87,5 +87,3 @@ class Discount(models.Model):
     def __str__(self):
         return "Discount: " + self.name_text + "( Id Establecimiento: " + str(self.establishment_id.id) + ")"
 
-
-# TODO: Intermediate Table that references: Users, Establishments and Discounts (manage num of scanned codes)

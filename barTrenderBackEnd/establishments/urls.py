@@ -8,4 +8,6 @@ urlpatterns = [
     path('<int:establishment_id>/discounts/<int:discount_id>/getQR', DiscountsQR.as_view()),
     # Get Establishments
     path('get', Establishments.as_view()),
+    # Scan Code
+    path('<int:establishment_id>/discounts/<int:discount_id>/scan', ScanDiscount.as_view()),
 ]
