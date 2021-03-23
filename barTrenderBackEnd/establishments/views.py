@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from authentication.decorators import token_required
 from authentication.utils import *
 from .utils import *
@@ -48,7 +48,7 @@ class DiscountsQR(APIView):
             return validations
 
         # Return correct QR
-        qr = generate_qr(token, establishment_id, discount_id)
+        qr = generate_qr(token, request.get_host(), establishment_id, discount_id)
         return HttpResponse(qr, status="200", content_type="image/png")
 
 

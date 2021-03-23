@@ -16,7 +16,7 @@ errors = {
     'E001': 'Establecimiento no existe',
     'E002': 'El establecimiento no pertenece al dueño',
     'D001': 'Descuento no existe',
-    'D002': 'Descuento no pertenece al establicimiento',
+    'D002': 'Descuento no pertenece al establecimiento',
     'D003': 'El descuento ha expirado',
     'D004': 'No quedan descuentos disponibles',
     'D005': 'Descuento ya escaneado por usuario',
@@ -106,7 +106,7 @@ def validate_establishment_owner(establishment_id, owner):
         return generate_response("E002", '400')
 
 
-def generate_qr(token, establishment_id, discount_id):
+def generate_qr(token, host, establishment_id, discount_id):
 
     # Client
     user = getUserFromToken(token)
@@ -123,8 +123,8 @@ def generate_qr(token, establishment_id, discount_id):
 
     # TODO: Change url of view to be sent (talk with front)
     api = 'v1/establishments/' + str(establishment_id) + \
-          '/discounts/' + str(discount_id) + '/scan?client_id=' + client.id
-    qr.add_data('http://localhost:8000/' + api)
+          '/discounts/' + str(discount_id) + '/scan?client_id=' + str(client.id)
+    qr.add_data('http://' + host + '/' + api)
     qr.make(fit=True)
 
     # QR to Bytes with PNG Format
