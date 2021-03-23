@@ -82,7 +82,11 @@ class ScanDiscount(APIView):
         if validations is not None:
             return validations
 
+        # Discount logic
+
         discount = Discount.objects.get(id=discount_id)
+        discount.scannedCodes_number += 1
+
         discount.clients_id.add(client)
         discount.save()
 
