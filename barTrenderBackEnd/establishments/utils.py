@@ -106,7 +106,7 @@ def validate_establishment_owner(establishment_id, owner):
         return generate_response("E002", '400')
 
 
-def generate_qr(token, host, establishment_id, discount_id):
+def generate_qr(token, host, establishment_id, discount_id, redirect_url):
 
     # Client
     user = getUserFromToken(token)
@@ -123,7 +123,7 @@ def generate_qr(token, host, establishment_id, discount_id):
 
     # TODO: Change url of view to be sent (talk with front)
     api = 'v1/establishments/' + str(establishment_id) + \
-          '/discounts/' + str(discount_id) + '/scan?client_id=' + str(client.id)
+          '/discounts/' + str(discount_id) + '/scan?client_id=' + str(client.id) + '&redirect_url=' + str(redirect_url)
     qr.add_data('http://' + host + '/' + api)
     qr.make(fit=True)
 
