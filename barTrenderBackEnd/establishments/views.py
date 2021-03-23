@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpResponseRedirect
 from authentication.decorators import token_required
 from authentication.utils import *
 from .utils import *
@@ -28,10 +28,11 @@ class Discounts(APIView):
 
 class DiscountsQR(APIView):
     @token_required("client")
-    def get(self, request, establishment_id, discount_id):
+    def post(self, request, establishment_id, discount_id):
 
         # globals params
         token = request.headers["token"]
+        redirect_url = request.data["redirect_url"]
 
         validations = validate_establishment(establishment_id)
 
@@ -48,15 +49,21 @@ class DiscountsQR(APIView):
             return validations
 
         # Return correct QR
-        qr = generate_qr(token, request.get_host(), establishment_id, discount_id)
+        qr = generate_qr(token, request.get_host(), establishment_id, discount_id, redirect_url)
         return HttpResponse(qr, status="200", content_type="image/png")
 
 
 class ScanDiscount(APIView):
     @token_required("owner")
-    def post(self, request, establishment_id, discount_id):
+    def get(self, request, establishment_id, discount_id):
 
         # globals params
+
+        if not request.is_secure():
+            redirect_url = 'http://' + request.GET["redirect_url"]
+        else:
+            redirect_url = 'https://' + request.GET["redirect_url"]
+
         try:
             owner = get_owner(request)
         except Owner.DoesNotExist:
@@ -90,7 +97,7 @@ class ScanDiscount(APIView):
         discount.clients_id.add(client)
         discount.save()
 
-        return Response({"Scanned"}, "200")
+        return HttpResponseRedirect(redirect_url)
 
 
 class Establishments(APIView):
