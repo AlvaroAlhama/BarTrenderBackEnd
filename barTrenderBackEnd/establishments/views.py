@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from authentication.decorators import token_required
 from authentication.utils import *
 from .utils import *
@@ -11,10 +11,8 @@ class Discounts(APIView):
     def get(self, request, establishment_id):
 
         # globals params
-        token = request.headers["token"]
 
-        validations = validate_establishment(token, establishment_id)
-
+        validations = validate_establishment(establishment_id)
         if validations is not None:
             return validations
 
@@ -35,23 +33,64 @@ class DiscountsQR(APIView):
         # globals params
         token = request.headers["token"]
 
-        validations = validate_establishment(token, establishment_id)
+        validations = validate_establishment(establishment_id)
 
         if validations is not None:
             return validations
 
-        validations = validate_discount(token, establishment_id, discount_id)
+        validations = validate_discount(establishment_id, discount_id)
 
         if validations is not None:
             return validations
 
-        validations = validate_conditions(request, discount_id)
+        validations = validate_conditions(get_client(request), discount_id)
         if validations is not None:
             return validations
 
         # Return correct QR
-        qr = generate_qr(token, establishment_id, discount_id)
+        qr = generate_qr(token, request.get_host(), establishment_id, discount_id)
         return HttpResponse(qr, status="200", content_type="image/png")
+
+
+class ScanDiscount(APIView):
+    @token_required("owner")
+    def post(self, request, establishment_id, discount_id):
+
+        # globals params
+        try:
+            owner = get_owner(request)
+        except Owner.DoesNotExist:
+            return generate_response("A002", '404')
+
+        # Check owner owns establishment
+        validations = validate_establishment_owner(establishment_id, owner)
+        if validations is not None:
+            return validations
+
+        # Check Discount is valid
+        validations = validate_discount(establishment_id, discount_id)
+        if validations is not None:
+            return validations
+
+        # Get Client
+        try:
+            client = get_client_id(request.GET["client_id"])
+        except Client.DoesNotExist:
+            return generate_response("A001", "404")
+
+        validations = validate_conditions(client, discount_id)
+        if validations is not None:
+            return validations
+
+        # Discount logic
+
+        discount = Discount.objects.get(id=discount_id)
+        discount.scannedCodes_number += 1
+
+        discount.clients_id.add(client)
+        discount.save()
+
+        return Response({"Scanned"}, "200")
 
 
 class Establishments(APIView):

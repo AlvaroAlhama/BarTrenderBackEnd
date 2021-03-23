@@ -11,15 +11,16 @@ from django.utils import timezone
 # ERROR MSG
 
 errors = {
+    'A001': 'Client no existe',
+    'A002': 'Client no existe',
     'E001': 'Establecimiento no existe',
+    'E002': 'El establecimiento no pertenece al dueño',
     'D001': 'Descuento no existe',
-    'D002': 'Descuento no pertenece al establicimiento',
+    'D002': 'Descuento no pertenece al establecimiento',
     'D003': 'El descuento ha expirado',
     'D004': 'No quedan descuentos disponibles',
     'D005': 'Descuento ya escaneado por usuario',
 }
-
-# TODO: Create function to validate CIF when creating Establishments and Validate Dates when creating Discounts
 
 
 def generate_response(code, status):
@@ -31,7 +32,7 @@ def generate_response(code, status):
     return Response(body, status)
 
 
-def validate_discount(token, establishment_id, discount_id):
+def validate_discount(establishment_id, discount_id):
 
     # Validate Discount
     try:
@@ -45,21 +46,19 @@ def validate_discount(token, establishment_id, discount_id):
         return generate_response("D001", '404')
 
 
-def validate_establishment(token, establishment_id):
+def validate_establishment(establishment_id):
 
     # Validate Establishment
     try:
         Establishment.objects.get(id=establishment_id)
     except Establishment.DoesNotExist:
         # Error: object does not exist, return 404
-        return generate_response("E001", '404')
+        return generate_response("E002", '404')
 
 
-def validate_conditions(request, discount_id):
+def validate_conditions(client, discount_id):
 
     # User
-    user = getUserFromToken(request.headers["token"])
-    client = Client.objects.get(user=user)
     discount = Discount.objects.get(id=discount_id)
 
     # Check if the code is going to be scanned in time
@@ -77,12 +76,41 @@ def validate_conditions(request, discount_id):
         return generate_response("D005", '400')
 
 
-def generate_qr(token, establishment_id, discount_id):
-    # HashInfo and generate code
-    scan_datetime = datetime.datetime.now()
+def get_client(request):
+    user = getUserFromToken(request.headers["token"])
+    client = Client.objects.get(user=user)
 
-    coded_str = str.encode(token + str(establishment_id) + str(discount_id) + str(scan_datetime))
-    hash_string = str(hashlib.md5(coded_str).hexdigest())
+    return client
+
+
+def get_client_id(id):
+    client = Client.objects.get(id=id)
+
+    return client
+
+
+def get_owner(request):
+    user = getUserFromToken(request.headers["token"])
+    owner = Owner.objects.get(user=user)
+
+    return owner
+
+
+def validate_establishment_owner(establishment_id, owner):
+
+    try:
+        Establishment.objects.get(id=establishment_id, owner=owner)
+
+    except Establishment.DoesNotExist:
+        # Error: object does not exist, return 404
+        return generate_response("E002", '400')
+
+
+def generate_qr(token, host, establishment_id, discount_id):
+
+    # Client
+    user = getUserFromToken(token)
+    client = Client.objects.get(user=user)
 
     # Code QR from hashed code
 
@@ -94,7 +122,9 @@ def generate_qr(token, establishment_id, discount_id):
     )
 
     # TODO: Change url of view to be sent (talk with front)
-    qr.add_data('http://localhost:8000/code?qr_scaned=' + hash_string)
+    api = 'v1/establishments/' + str(establishment_id) + \
+          '/discounts/' + str(discount_id) + '/scan?client_id=' + str(client.id)
+    qr.add_data('http://' + host + '/' + api)
     qr.make(fit=True)
 
     # QR to Bytes with PNG Format
