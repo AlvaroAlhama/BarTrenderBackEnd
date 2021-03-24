@@ -10,6 +10,8 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED
 )
+from datetime import datetime
+from django.db.models import Q
 
 
 class Discounts(APIView):
@@ -127,9 +129,19 @@ class Establishments(APIView):
         leisure_filter = {} if not "leisures" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["leisures"], type="Ocio")}
 
+        # Filter by Discount:
+        # Get all the establishment that have discounts, filter the establishment by this ids
+        discount_filter = {}
+        if "discounts" in filters:
+            if filters["discounts"]:
+                #discount_filter = {"discount__initial_date__lt": datetime.now(), "discount__end_date__gt": datetime.now(),
+                                    #"discount__scannedCodes_number__lt":"discount__totalCodes_number"}
+                discount_filter = {"discount__valid": True}
+        
+
         # Search establishments
         establishments = Establishment.objects.filter(
-            **zone_filter).filter(**beer_filter).filter(**leisure_filter)
+            **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**discount_filter)
 
         response = []
 
