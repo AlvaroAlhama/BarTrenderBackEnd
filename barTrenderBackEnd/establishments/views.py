@@ -4,10 +4,16 @@ from authentication.decorators import token_required, apikey_required
 from authentication.utils import *
 from .utils import *
 from .serializers import *
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED
+)
 
 
 class Discounts(APIView):
-
+    @apikey_required
     def get(self, request, establishment_id):
 
         # globals params
@@ -120,13 +126,24 @@ class Establishments(APIView):
         # Filter by beer
         beer_filter = {} if not "beers" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["beers"], type="Bebida")}
+        
+        # Filter by leisure
+        leisure_filter = {} if not "leisures" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["leisures"], type="Ocio")}
 
         # Search establishments
-        establishments = Establishment.objects.filter(**zone_filter).filter(**beer_filter).values(
-            'id', 'name_text', 'zone_enum', 'phone_number')
+        establishments = Establishment.objects.filter(
+            **zone_filter).filter(**beer_filter).filter(**leisure_filter)
 
-        response = {
-            'establishments': establishments
-        }
+        response = []
+
+        for e in establishments:
+            tags = e.tags.all().values("name", "type")
+            response.append({
+                'name': e.name_text,
+                'phone': e.phone_number,
+                'zone': e.zone_enum, 
+                'tags': tags
+            })
 
         return Response(response, "200")
