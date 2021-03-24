@@ -35,11 +35,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'authentication',
     'establishments',
+    'stats',
 ]
 
 MODULES = [
     'authentication',
     'establishments',
+    'stats',
 ]
 
 MIDDLEWARE = [
