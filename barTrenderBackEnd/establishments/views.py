@@ -16,7 +16,11 @@ class Discounts(APIView):
         if validations is not None:
             return validations
 
-        discounts = Discount.objects.filter(establishment_id=establishment_id)
+        # Check for:
+        #   - end date is not null and is before today
+        #   - total codes is not null and scannedCodes < totalCodes
+
+        discounts = get_valid_discounts(establishment_id)
         serializer = DiscountSerializer(discounts, many=True)
 
         body = {

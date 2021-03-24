@@ -12,6 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 env = environ.Env()
 environ.Env.read_env()
+
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 API_KEY = env('API_KEY')
 TOKEN_SECRET = env('TOKEN_SECRET')

@@ -6,7 +6,7 @@ import io
 from authentication.utils import *
 from .models import *
 from django.utils import timezone
-
+from django.db.models import Q, F
 
 # ERROR MSG
 
@@ -24,7 +24,6 @@ errors = {
 
 
 def generate_response(code, status):
-
     body = {
         'error': str(code) + ": " + errors[code]
     }
@@ -33,7 +32,6 @@ def generate_response(code, status):
 
 
 def validate_discount(establishment_id, discount_id):
-
     # Validate Discount
     try:
         discount = Discount.objects.get(id=discount_id)
@@ -47,7 +45,6 @@ def validate_discount(establishment_id, discount_id):
 
 
 def validate_establishment(establishment_id):
-
     # Validate Establishment
     try:
         Establishment.objects.get(id=establishment_id)
@@ -57,7 +54,6 @@ def validate_establishment(establishment_id):
 
 
 def validate_conditions(client, discount_id):
-
     # User
     discount = Discount.objects.get(id=discount_id)
 
@@ -97,7 +93,6 @@ def get_owner(request):
 
 
 def validate_establishment_owner(establishment_id, owner):
-
     try:
         Establishment.objects.get(id=establishment_id, owner=owner)
 
@@ -106,8 +101,23 @@ def validate_establishment_owner(establishment_id, owner):
         return generate_response("E002", '400')
 
 
-def generate_qr(token, host, establishment_id, discount_id, redirect_url):
+def get_valid_discounts(establishment_id):
 
+    result_query = Q(establishment_id=establishment_id) & \
+                   (Q(end_date__isnull=True, totalCodes_number__isnull=True) |
+                    Q(end_date__isnull=True, totalCodes_number__isnull=False,
+                      scannedCodes_number__lt=F('totalCodes_number')) |
+                    Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=True) |
+                    Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=False,
+                      scannedCodes_number__lt=F('totalCodes_number'))
+                    )
+
+    discounts = Discount.objects.filter(result_query)
+
+    return discounts
+
+
+def generate_qr(token, host, establishment_id, discount_id, redirect_url):
     # Client
     user = getUserFromToken(token)
     client = Client.objects.get(user=user)

@@ -11,4 +11,4 @@ class EstablishmentSerializer(serializers.ModelSerializer):
 class DiscountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discount
-        fields = '__all__'
+        exclude = ('clients_id',)
