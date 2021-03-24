@@ -11,8 +11,7 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED
 )
-
-APIKEY = "apikeytest"
+from django.conf import settings
 
 def apikey_required(view_func):
     def wrapped(self, request, **kwargs):
@@ -20,8 +19,8 @@ def apikey_required(view_func):
             apiKey = request.headers["apiKey"]
         except:
             return Response({"error": "No API KEY Provided"}, HTTP_401_UNAUTHORIZED)
-            
-        if apiKey != APIKEY:
+        print(settings.API_KEY)
+        if apiKey != settings.API_KEY:
             return Response({"error": "A400"}, HTTP_401_UNAUTHORIZED)
         return view_func(self, request, **kwargs)
 

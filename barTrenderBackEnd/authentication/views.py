@@ -19,7 +19,11 @@ class login(APIView):
     def post(self, request):
         
         #Get data from request
-        body = json.loads(request.body)
+        try:
+            body = json.loads(request.body)
+        except:
+            return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+
         email = body["email"]
         password = body["password"]
 
