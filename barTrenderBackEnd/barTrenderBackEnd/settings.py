@@ -1,5 +1,6 @@
 from pathlib import Path
 import django_heroku
+import environ
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -9,7 +10,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'blu1l(uav-_+r8nxb$!@zxf0v3!0*!=9y+3vg&!^yxm$)df012'
+env = environ.Env()
+environ.Env.read_env()
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+API_KEY = env('API_KEY')
+TOKEN_SECRET = env('TOKEN_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,15 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'http://localhost:8000',
-  'http://127.0.0.1:8000',
-  'http://localhost:5000',
-  'http://127.0.0.1:5000',
-  # Add the url when deployed
-]
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_HEADERS = (
     'accept',

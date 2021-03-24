@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from django.http import HttpResponse, HttpResponseRedirect
-from authentication.decorators import token_required
+from authentication.decorators import token_required, apikey_required
 from authentication.utils import *
 from .utils import *
 from .serializers import *
@@ -101,11 +101,14 @@ class ScanDiscount(APIView):
 
 
 class Establishments(APIView):
-
+    @apikey_required
     def post(self, request):
 
         # Get data from request
-        filters = request.data["filters"]
+        try:
+            filters = request.data["filters"]
+        except:
+            return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
 
         # Filter by zone if exist
         zone_filter = {} if not "zones" in filters else {'zone_enum__in': filters["zones"]}

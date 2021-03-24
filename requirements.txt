@@ -7,3 +7,4 @@ pyjwt
 coverage
 django-heroku
 gunicorn
+django-environ
