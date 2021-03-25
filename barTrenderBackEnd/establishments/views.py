@@ -10,8 +10,8 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED
 )
-from datetime import datetime
-from django.db.models import Q
+from django.utils import timezone
+from django.db.models import Q, F
 
 
 class Discounts(APIView):
@@ -131,17 +131,25 @@ class Establishments(APIView):
 
         # Filter by Discount:
         # Get all the establishment that have discounts, filter the establishment by this ids
-        discount_filter = {}
+        discount_filter = ''
         if "discounts" in filters:
             if filters["discounts"]:
-                #discount_filter = {"discount__initial_date__lt": datetime.now(), "discount__end_date__gt": datetime.now(),
-                                    #"discount__scannedCodes_number__lt":"discount__totalCodes_number"}
-                discount_filter = {"discount__valid": True}
+                discount_filter = (Q(discount__end_date__isnull=True, discount__initial_date__lt=timezone.now(), 
+                    discount__totalCodes_number__isnull=True) | Q(discount__end_date__isnull=True,
+                    discount__initial_date__lt=timezone.now(), discount__totalCodes_number__isnull=False, 
+                    discount__scannedCodes_number__lt=F('discount__totalCodes_number')) | Q(discount__end_date__isnull=False, 
+                    discount__end_date__gt=timezone.now(), discount__initial_date__lt=timezone.now(), discount__totalCodes_number__isnull=True) |
+                    Q(discount__end_date__isnull=False, discount__end_date__gt=timezone.now(), discount__initial_date__lt=timezone.now(), 
+                    discount__totalCodes_number__isnull=False, discount__scannedCodes_number__lt=F('discount__totalCodes_number')))
         
 
         # Search establishments
-        establishments = Establishment.objects.filter(
-            **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**discount_filter)
+        if discount_filter != '':
+            establishments = Establishment.objects.filter(
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(discount_filter)    
+        else:
+            establishments = Establishment.objects.filter(
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter)
 
         response = []
 
