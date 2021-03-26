@@ -2,8 +2,8 @@ import jwt
 from django.contrib.auth.models import User
 import time
 from authentication.models import Client, Owner
+from django.conf import settings
 
-SECRET = "secreto"
 HOURS = 1
 
 def getRol(user):
@@ -29,10 +29,10 @@ def getToken(user, rol):
         "expiresIn": expiresIn
     }
 
-    return jwt.encode(payload, SECRET, algorithm="HS256"), expiresIn
+    return jwt.encode(payload, settings.TOKEN_SECRET, algorithm="HS256"), expiresIn
 
 def validateToken(token, rol):
-    decoded = jwt.decode(token, SECRET, algorithms=["HS256"])
+    decoded = jwt.decode(token, settings.TOKEN_SECRET, algorithms=["HS256"])
     decodedExpiresIn = decoded["expiresIn"]
     decodedRol = decoded["rol"]
 
@@ -45,7 +45,7 @@ def validateToken(token, rol):
     return None
 
 def getUserFromToken(token):
-    decoded = jwt.decode(token, SECRET, algorithms=["HS256"])
+    decoded = jwt.decode(token, settings.TOKEN_SECRET, algorithms=["HS256"])
     username = decoded["username"]
 
     return User.objects.get(username=username)
