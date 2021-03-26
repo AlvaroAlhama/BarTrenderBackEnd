@@ -2,11 +2,12 @@ from rest_framework.response import Response
 import qrcode
 import hashlib
 import datetime
+import time
 import io
 from authentication.utils import *
 from .models import *
 from django.utils import timezone
-
+from django.db.models import Q, F
 
 # ERROR MSG
 
@@ -20,11 +21,15 @@ errors = {
     'D003': 'El descuento ha expirado',
     'D004': 'No quedan descuentos disponibles',
     'D005': 'Descuento ya escaneado por usuario',
+    'D010': 'Campos obligatorios no proporcionados',
+    'D011': 'El coste no puede ser menor que 0',
+    'D012': 'El total de códigos no puede ser menor que 0',
+    'D013': 'La fecha inicial no puede estar en el pasado',
+    'D014': 'La fecha de finalización debe ser posterior a la inicial',
 }
 
 
 def generate_response(code, status):
-
     body = {
         'error': str(code) + ": " + errors[code]
     }
@@ -33,7 +38,6 @@ def generate_response(code, status):
 
 
 def validate_discount(establishment_id, discount_id):
-
     # Validate Discount
     try:
         discount = Discount.objects.get(id=discount_id)
@@ -45,9 +49,25 @@ def validate_discount(establishment_id, discount_id):
         # Error: object does not exist, return 404
         return generate_response("D001", '404')
 
+def validate_discount_request(discount):
+    if "name" not in discount or "description" not in discount or "cost" not in discount or "initialDate" not in discount:
+        return generate_response("D010", "400")
+
+    if discount["name"]=="" or discount["description"]=="" or discount["cost"]=="" or discount["initialDate"]=="" or discount["name"]==None or discount["description"]==None or discount["cost"]==None or discount["initialDate"]==None:
+        return generate_response("D010", "400")
+
+    if discount["cost"] < 0: return generate_response("D011", "400")
+
+    if "totalCodes" in discount:
+        if discount["totalCodes"] <= 0 : return generate_response("D012", "400")
+    
+    if discount["initialDate"] < time.time() - 10: return generate_response("D013", "400")
+
+    if "endDate" in discount:
+        if discount["endDate"] < discount["initialDate"]: return generate_response("D014", "400")
+
 
 def validate_establishment(establishment_id):
-
     # Validate Establishment
     try:
         Establishment.objects.get(id=establishment_id)
@@ -57,7 +77,6 @@ def validate_establishment(establishment_id):
 
 
 def validate_conditions(client, discount_id):
-
     # User
     discount = Discount.objects.get(id=discount_id)
 
@@ -97,7 +116,6 @@ def get_owner(request):
 
 
 def validate_establishment_owner(establishment_id, owner):
-
     try:
         Establishment.objects.get(id=establishment_id, owner=owner)
 
@@ -106,8 +124,23 @@ def validate_establishment_owner(establishment_id, owner):
         return generate_response("E002", '400')
 
 
-def generate_qr(token, host, establishment_id, discount_id, redirect_url):
+def get_valid_discounts(establishment_id):
 
+    result_query = Q(establishment_id=establishment_id) & \
+                   (Q(end_date__isnull=True, totalCodes_number__isnull=True) |
+                    Q(end_date__isnull=True, totalCodes_number__isnull=False,
+                      scannedCodes_number__lt=F('totalCodes_number')) |
+                    Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=True) |
+                    Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=False,
+                      scannedCodes_number__lt=F('totalCodes_number'))
+                    )
+
+    discounts = Discount.objects.filter(result_query)
+
+    return discounts
+
+
+def generate_qr(token, host, establishment_id, discount_id, redirect_url):
     # Client
     user = getUserFromToken(token)
     client = Client.objects.get(user=user)

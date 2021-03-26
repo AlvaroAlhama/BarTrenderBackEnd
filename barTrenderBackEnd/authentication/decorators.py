@@ -19,7 +19,7 @@ def apikey_required(view_func):
             apiKey = request.headers["apiKey"]
         except:
             return Response({"error": "No API KEY Provided"}, HTTP_401_UNAUTHORIZED)
-        print(settings.API_KEY)
+        
         if apiKey != settings.API_KEY:
             return Response({"error": "A400"}, HTTP_401_UNAUTHORIZED)
         return view_func(self, request, **kwargs)

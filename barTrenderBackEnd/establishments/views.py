@@ -4,10 +4,20 @@ from authentication.decorators import token_required, apikey_required
 from authentication.utils import *
 from .utils import *
 from .serializers import *
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED
+)
+from django.utils import timezone
+import pytz
+from datetime import datetime
+from django.db.models import Q, F
 
 
 class Discounts(APIView):
-
+    @apikey_required
     def get(self, request, establishment_id):
 
         # globals params
@@ -16,7 +26,11 @@ class Discounts(APIView):
         if validations is not None:
             return validations
 
-        discounts = Discount.objects.filter(establishment_id=establishment_id)
+        # Check for:
+        #   - end date is not null and is before today
+        #   - total codes is not null and scannedCodes < totalCodes
+
+        discounts = get_valid_discounts(establishment_id)
         serializer = DiscountSerializer(discounts, many=True)
 
         body = {
@@ -24,6 +38,28 @@ class Discounts(APIView):
         }
 
         return Response(body, "200")
+
+    @token_required("owner")
+    def post(self, request, establishment_id):
+        #Validation
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None: return valid
+
+        try: discount = request.data
+        except: return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+
+        valid = validate_discount_request(discount)
+        if valid is not None: return valid
+
+        totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
+        endDate = datetime.fromtimestamp(discount["endDate"], pytz.utc) if "endDate" in discount else None
+        #Generate the discount
+        Discount.objects.create(name_text=discount["name"], description_text=discount["description"], cost_number=discount["cost"], totalCodes_number=totalCodes,
+                                scannedCodes_number=0, initial_date=datetime.fromtimestamp(discount["initialDate"],pytz.utc), end_date=endDate, 
+                                establishment_id=Establishment.objects.get(id=establishment_id))
+
+        return Response({"msg":"The discount has been created"}, HTTP_201_CREATED)
+
 
 
 class DiscountsQR(APIView):
@@ -116,13 +152,42 @@ class Establishments(APIView):
         # Filter by beer
         beer_filter = {} if not "beers" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["beers"], type="Bebida")}
+        
+        # Filter by leisure
+        leisure_filter = {} if not "leisures" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["leisures"], type="Ocio")}
+
+        # Filter by Discount:
+        # Get all the establishment that have discounts, filter the establishment by this ids
+        discount_filter = ''
+        if "discounts" in filters:
+            if filters["discounts"]:
+                discount_filter = (Q(discount__end_date__isnull=True, discount__initial_date__lt=timezone.now(), 
+                    discount__totalCodes_number__isnull=True) | Q(discount__end_date__isnull=True,
+                    discount__initial_date__lt=timezone.now(), discount__totalCodes_number__isnull=False, 
+                    discount__scannedCodes_number__lt=F('discount__totalCodes_number')) | Q(discount__end_date__isnull=False, 
+                    discount__end_date__gt=timezone.now(), discount__initial_date__lt=timezone.now(), discount__totalCodes_number__isnull=True) |
+                    Q(discount__end_date__isnull=False, discount__end_date__gt=timezone.now(), discount__initial_date__lt=timezone.now(), 
+                    discount__totalCodes_number__isnull=False, discount__scannedCodes_number__lt=F('discount__totalCodes_number')))
+        
 
         # Search establishments
-        establishments = Establishment.objects.filter(**zone_filter).filter(**beer_filter).values(
-            'id', 'name_text', 'zone_enum', 'phone_number')
+        if discount_filter != '':
+            establishments = Establishment.objects.filter(
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(discount_filter)    
+        else:
+            establishments = Establishment.objects.filter(
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter)
 
-        response = {
-            'establishments': establishments
-        }
+        response = []
+
+        for e in establishments:
+            tags = e.tags.all().values("name", "type")
+            response.append({
+                'name': e.name_text,
+                'phone': e.phone_number,
+                'zone': e.zone_enum, 
+                'tags': tags
+            })
 
         return Response(response, "200")
