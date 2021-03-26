@@ -60,6 +60,38 @@ class Discounts(APIView):
 
         return Response({"msg":"The discount has been created"}, HTTP_201_CREATED)
 
+    @token_required("owner")
+    def put(self, request, establishment_id, discount_id):
+        #Validation
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None: return valid
+
+        valid = validate_discount(establishment_id, discount_id)
+        if valid is not None: return valid
+
+        try: discount = request.data
+        except: return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+
+        valid, discount_stored = validate_discount_update(discount, discount_id)
+        if valid is not None: return valid
+
+        totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
+        endDate = datetime.fromtimestamp(discount["endDate"], pytz.utc) if "endDate" in discount else None
+        scannedCodes = discount["scannedCodes"] if "scannedCodes" in discount else 0
+
+        #Update the discount
+        discount_stored.name_text = discount["name"]
+        discount_stored.description_text = discount["description"]
+        discount_stored.cost_number = discount["cost"]
+        discount_stored.totalCodes_number = totalCodes
+        discount_stored.scannedCodes_number = scannedCodes
+        discount_stored.initial_date = datetime.fromtimestamp(discount["initialDate"],pytz.utc)
+        discount_stored.end_date = endDate
+        discount_stored.establishment_id = Establishment.objects.get(id=establishment_id)
+        discount_stored.save()
+
+        return Response({"msg":"The discount has been updated"}, HTTP_200_OK)
+
 
 
 class DiscountsQR(APIView):
