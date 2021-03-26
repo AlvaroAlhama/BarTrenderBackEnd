@@ -73,7 +73,7 @@ class Discount(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
 
     # Relations
-    clients_id = models.ManyToManyField(Client, blank=True, null=True)
+    clients_id = models.ManyToManyField(Client, blank=True)
     establishment_id = models.ForeignKey(Establishment, on_delete=models.CASCADE)
 
     def clean(self):
