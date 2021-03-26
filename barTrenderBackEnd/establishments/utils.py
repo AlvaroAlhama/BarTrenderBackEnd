@@ -106,7 +106,7 @@ def validate_establishment_owner(establishment_id, owner):
         return generate_response("E002", '400')
 
 
-def generate_qr(token, host, establishment_id, discount_id):
+def generate_qr(request, token, host, establishment_id, discount_id):
 
     # Client
     user = getUserFromToken(token)
@@ -126,7 +126,13 @@ def generate_qr(token, host, establishment_id, discount_id):
     params = 'establishment_id=' + establishment_id + '&discount_id' + discount_id + '&client_id=' + str(client.id)
 
     api = 'login?' + str(params)
-    qr.add_data('http://' + host + '/' + api)
+
+    if request.is_secure():
+        http = "https://"
+    else:
+        http = "http://"
+
+    qr.add_data(http + host + '/' + api)
     qr.make(fit=True)
 
     # QR to Bytes with PNG Format

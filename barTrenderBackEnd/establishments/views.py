@@ -48,7 +48,7 @@ class DiscountsQR(APIView):
             return validations
 
         # Return correct QR
-        qr = generate_qr(token, request.get_host(), establishment_id, discount_id)
+        qr = generate_qr(request, token, request.get_host(), establishment_id, discount_id)
         return HttpResponse(qr, status="200", content_type="image/png")
 
 
@@ -57,12 +57,6 @@ class ScanDiscount(APIView):
     def get(self, request, establishment_id, discount_id):
 
         # globals params
-
-        if not request.is_secure():
-            redirect_url = 'http://' + request.GET["redirect_url"]
-        else:
-            redirect_url = 'https://' + request.GET["redirect_url"]
-
         try:
             owner = get_owner(request)
         except Owner.DoesNotExist:
@@ -96,7 +90,7 @@ class ScanDiscount(APIView):
         discount.clients_id.add(client)
         discount.save()
 
-        return HttpResponseRedirect(redirect_url)
+        return Response({"Success Scanning the QR. Discount applied!"}, "200")
 
 
 class Establishments(APIView):
