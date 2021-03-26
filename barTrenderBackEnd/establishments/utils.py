@@ -2,6 +2,7 @@ from rest_framework.response import Response
 import qrcode
 import hashlib
 import datetime
+import time
 import io
 from authentication.utils import *
 from .models import *
@@ -20,6 +21,11 @@ errors = {
     'D003': 'El descuento ha expirado',
     'D004': 'No quedan descuentos disponibles',
     'D005': 'Descuento ya escaneado por usuario',
+    'D010': 'Campos obligatorios no proporcionados',
+    'D011': 'El coste no puede ser menor que 0',
+    'D012': 'El total de códigos no puede ser menor que 0',
+    'D013': 'La fecha inicial no puede estar en el pasado',
+    'D014': 'La fecha de finalización debe ser posterior a la inicial',
 }
 
 
@@ -42,6 +48,23 @@ def validate_discount(establishment_id, discount_id):
     except Discount.DoesNotExist:
         # Error: object does not exist, return 404
         return generate_response("D001", '404')
+
+def validate_discount_request(discount):
+    if "name" not in discount or "description" not in discount or "cost" not in discount or "initialDate" not in discount:
+        return generate_response("D010", "400")
+
+    if discount["name"]=="" or discount["description"]=="" or discount["cost"]=="" or discount["initialDate"]=="" or discount["name"]==None or discount["description"]==None or discount["cost"]==None or discount["initialDate"]==None:
+        return generate_response("D010", "400")
+
+    if discount["cost"] < 0: return generate_response("D011", "400")
+
+    if "totalCodes" in discount:
+        if discount["totalCodes"] <= 0 : return generate_response("D012", "400")
+    
+    if discount["initialDate"] < time.time() - 10: return generate_response("D013", "400")
+
+    if "endDate" in discount:
+        if discount["endDate"] < discount["initialDate"]: return generate_response("D014", "400")
 
 
 def validate_establishment(establishment_id):
