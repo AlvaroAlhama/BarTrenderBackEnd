@@ -65,7 +65,6 @@ class Discounts(APIView):
         return Response({"msg":"The discount has been created"}, HTTP_201_CREATED)
 
 
-
 class DiscountsQR(APIView):
     @token_required("client")
     def get(self, request, establishment_id, discount_id):
@@ -94,7 +93,7 @@ class DiscountsQR(APIView):
 
 class ScanDiscount(APIView):
     @token_required("owner")
-    def get(self, request, establishment_id, discount_id):
+    def get(self, request, establishment_id, discount_id, client_id):
 
         # globals params
         try:
@@ -114,7 +113,7 @@ class ScanDiscount(APIView):
 
         # Get Client
         try:
-            client = get_client_id(request.GET["client_id"])
+            client = Client.objects.get(id=client_id)
         except Client.DoesNotExist:
             return generate_response("A001", "404")
 

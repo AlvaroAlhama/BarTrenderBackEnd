@@ -9,7 +9,7 @@ urlpatterns = [
     # Get Establishments
     path('get', Establishments.as_view()),
     # Scan Code
-    path('<int:establishment_id>/discounts/<int:discount_id>/scan', ScanDiscount.as_view()),
+    path('<int:establishment_id>/discounts/<int:discount_id>/client/<int:client_id>/scan', ScanDiscount.as_view()),
     #Create Discount
     path('<int:establishment_id>/discounts/create', Discounts.as_view())
 ]
