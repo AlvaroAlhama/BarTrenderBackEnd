@@ -9,6 +9,8 @@ from .models import *
 from django.utils import timezone
 from django.db.models import Q, F
 from datetime import datetime
+import math
+
 
 # ERROR MSG
 
@@ -184,20 +186,39 @@ def validate_establishment_owner(establishment_id, owner):
         return generate_response("E002", '400')
 
 
-def get_valid_discounts(establishment_id):
+def get_valid_discounts(establishment_id, all):
 
-    result_query = Q(establishment_id=establishment_id) & \
-                   (Q(end_date__isnull=True, totalCodes_number__isnull=True) |
-                    Q(end_date__isnull=True, totalCodes_number__isnull=False,
-                      scannedCodes_number__lt=F('totalCodes_number')) |
-                    Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=True) |
-                    Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=False,
-                      scannedCodes_number__lt=F('totalCodes_number'))
-                    )
+    if not all:
+        result_query = Q(establishment_id=establishment_id) & \
+                       (Q(end_date__isnull=True, totalCodes_number__isnull=True, initial_date__lt=timezone.now()) |
+                        Q(end_date__isnull=True, totalCodes_number__isnull=False, scannedCodes_number__lt=F('totalCodes_number'), initial_date__lt=timezone.now()) |
+                        Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=True, initial_date__lt=timezone.now()) |
+                        Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=False, scannedCodes_number__lt=F('totalCodes_number'), initial_date__lt=timezone.now())
+                        )
+    elif all:
+        result_query = Q(establishment_id=establishment_id) & \
+                       (Q(end_date__isnull=True, totalCodes_number__isnull=True) |
+                        Q(end_date__isnull=True, totalCodes_number__isnull=False, scannedCodes_number__lt=F('totalCodes_number')) |
+                        Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=True) |
+                        Q(end_date__isnull=False, end_date__gt=timezone.now(), totalCodes_number__isnull=False, scannedCodes_number__lt=F('totalCodes_number'))
+                        )
+    else:
+        return None
 
     discounts = Discount.objects.filter(result_query)
 
     return discounts
+
+
+def paginated_discounts(discounts, page, page_size):
+
+    obj_per_page = math.floor(len(discounts)/page_size)
+    offset = page_size * page
+
+    if offset+obj_per_page > len(discounts):
+        return discounts[offset:]
+    else:
+        return discounts[offset:offset+obj_per_page]
 
 
 def generate_qr(token, host, establishment_id, discount_id, redirect_url):

@@ -4,6 +4,7 @@ from authentication.decorators import token_required, apikey_required
 from authentication.utils import *
 from .utils import *
 from .serializers import *
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -26,18 +27,21 @@ class Discounts(APIView):
         if validations is not None:
             return validations
 
-        # Check for:
-        #   - end date is not null and is before today
-        #   - total codes is not null and scannedCodes < totalCodes
+        paginator = PageNumberPagination()
+        paginator.page_size = 7
 
-        discounts = get_valid_discounts(establishment_id)
-        serializer = DiscountSerializer(discounts, many=True)
+        if request.GET['all'] is None or request.GET['all'] == "False":
+            discounts = get_valid_discounts(establishment_id, False)
+        else:
+            discounts = get_valid_discounts(establishment_id, True)
 
-        body = {
-            "discounts": serializer.data,
-        }
+        if discounts is None:
+            return Response({"No valid query"}, '400')
 
-        return Response(body, "200")
+        context = paginator.paginate_queryset(discounts, request)
+        serializer = DiscountSerializer(context, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
 
     @token_required("owner")
     def post(self, request, establishment_id):
