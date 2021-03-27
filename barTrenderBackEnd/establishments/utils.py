@@ -164,7 +164,7 @@ def generate_qr(request, token, host, establishment_id, discount_id):
         border=4,
     )
 
-    params = 'establishment_id=' + str(establishment_id) + '&discount_id' + str(discount_id) + '&client_id=' + str(client.id)
+    params = 'establishment_id=' + str(establishment_id) + '&discount_id=' + str(discount_id) + '&client_id=' + str(client.id)
 
     api = 'login?' + str(params)
 
