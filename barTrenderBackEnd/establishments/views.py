@@ -56,14 +56,62 @@ class Discounts(APIView):
         if valid is not None: return valid
 
         totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
-        endDate = datetime.fromtimestamp(discount["endDate"], pytz.utc) if "endDate" in discount else None
+        endDate = datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
         #Generate the discount
         Discount.objects.create(name_text=discount["name"], description_text=discount["description"], cost_number=discount["cost"], totalCodes_number=totalCodes,
-                                scannedCodes_number=0, initial_date=datetime.fromtimestamp(discount["initialDate"],pytz.utc), end_date=endDate, 
+                                scannedCodes_number=0, initial_date=datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid')), end_date=endDate, 
                                 establishment_id=Establishment.objects.get(id=establishment_id))
 
         return Response({"msg":"The discount has been created"}, HTTP_201_CREATED)
 
+    @token_required("owner")
+    def put(self, request, establishment_id, discount_id):
+        #Validation
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None: return valid
+
+        valid = validate_discount(establishment_id, discount_id)
+        if valid is not None: return valid
+
+        try: discount = request.data
+        except: return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+
+        valid, discount_stored = validate_discount_update(discount, discount_id)
+        if valid is not None: return valid
+
+        totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
+        endDate = datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
+        scannedCodes = discount["scannedCodes"] if "scannedCodes" in discount else 0
+
+        #Update the discount
+        discount_stored.name_text = discount["name"]
+        discount_stored.description_text = discount["description"]
+        discount_stored.cost_number = discount["cost"]
+        discount_stored.totalCodes_number = totalCodes
+        discount_stored.scannedCodes_number = scannedCodes
+        if discount["initialDate"] > time.time():
+            discount_stored.initial_date = datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid'))
+        discount_stored.end_date = endDate
+        discount_stored.establishment_id = Establishment.objects.get(id=establishment_id)
+        discount_stored.update()
+
+        return Response({"msg":"The discount has been updated"}, HTTP_200_OK)
+    
+    @token_required("owner")
+    def delete(self, request, establishment_id, discount_id):
+        #Validation
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None: return valid
+
+        valid = validate_discount(establishment_id, discount_id)
+        if valid is not None: return valid
+
+        valid, discount = validate_discount_delete(discount_id)
+        if valid is not None: return valid
+        #Delete discount
+        discount.delete()
+
+        return Response({"msg":"The discount has been deleted"}, HTTP_200_OK)
 
 
 class DiscountsQR(APIView):
