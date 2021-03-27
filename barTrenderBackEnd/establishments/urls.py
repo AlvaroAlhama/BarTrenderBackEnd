@@ -12,4 +12,5 @@ urlpatterns = [
     path('<int:establishment_id>/discounts/<int:discount_id>/client/<int:client_id>/scan', ScanDiscount.as_view()),
     #Create Discount
     path('<int:establishment_id>/discounts/create', Discounts.as_view())
+
 ]

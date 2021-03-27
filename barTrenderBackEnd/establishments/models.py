@@ -84,6 +84,9 @@ class Discount(models.Model):
         self.full_clean()
         super(Discount, self).save(*args, **kwargs)
 
+    def update(self, *args, **kwargs):
+        super(Discount, self).save(*args, **kwargs)
+
     def __str__(self):
         return "Discount: " + self.name_text + "( Id Establecimiento: " + str(self.establishment_id.id) + ")"
 
