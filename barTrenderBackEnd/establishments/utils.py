@@ -210,19 +210,9 @@ def get_valid_discounts(establishment_id, all):
     return discounts
 
 
-def paginated_discounts(discounts, page, page_size):
-
-    obj_per_page = math.floor(len(discounts)/page_size)
-    offset = page_size * page
-
-    if offset+obj_per_page > len(discounts):
-        return discounts[offset:]
-    else:
-        return discounts[offset:offset+obj_per_page]
-
-
-def generate_qr(token, host, establishment_id, discount_id, redirect_url):
+def generate_qr(request, token, host, establishment_id, discount_id):
     # Client
+
     user = getUserFromToken(token)
     client = Client.objects.get(user=user)
 
@@ -235,9 +225,7 @@ def generate_qr(token, host, establishment_id, discount_id, redirect_url):
         border=4,
     )
 
-    # TODO: Change url of view to be sent (talk with front)
-
-    params = 'establishment_id=' + establishment_id + '&discount_id' + discount_id + '&client_id=' + str(client.id)
+    params = 'establishment_id=' + str(establishment_id) + '&discount_id=' + str(discount_id) + '&client_id=' + str(client.id)
 
     api = 'login?' + str(params)
 
