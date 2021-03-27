@@ -36,11 +36,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'authentication',
     'establishments',
+    'stats',
 ]
 
 MODULES = [
     'authentication',
     'establishments',
+    'stats',
 ]
 
 MIDDLEWARE = [
@@ -128,6 +130,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

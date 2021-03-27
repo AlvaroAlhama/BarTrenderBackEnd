@@ -36,7 +36,7 @@ def token_required(rol):
                 return Response({"error": "No token Provided"}, HTTP_401_UNAUTHORIZED)
 
             error = validateToken(token,rol)
-            if error :
+            if error:
                 return Response({"error": error}, HTTP_401_UNAUTHORIZED)
 
             return view_func(self, request, **kwargs)
