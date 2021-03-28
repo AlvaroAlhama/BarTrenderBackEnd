@@ -228,6 +228,7 @@ class Establishments(APIView):
         for e in establishments:
             tags = e.tags.all().values("name", "type")
             response.append({
+                'id': e.id,
                 'name': e.name_text,
                 'phone': e.phone_number,
                 'zone': e.zone_enum, 
