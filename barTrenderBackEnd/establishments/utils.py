@@ -35,6 +35,7 @@ errors = {
     'D018': 'El número de códigos escaneados no puede ser diferente de 0',
     'D019': 'No se puede modificar un descuento que haya caducado',
     'D020': 'No se puede eliminar un descuento que haya comenzado y tenga códigos escaneados',
+    'D021': 'El descuento aun no ha comenzado',
 }
 
 
@@ -141,6 +142,10 @@ def validate_establishment(establishment_id):
 def validate_conditions(client, discount_id):
     # User
     discount = Discount.objects.get(id=discount_id)
+
+    # Check if the code is going to be scanned in time
+    if discount.initial_date > timezone.now():
+        return generate_response("D021", '400')
 
     # Check if the code is going to be scanned in time
     if discount.end_date is not None:
