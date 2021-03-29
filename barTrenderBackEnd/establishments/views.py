@@ -174,8 +174,8 @@ class ScanDiscount(APIView):
         discount = Discount.objects.get(id=discount_id)
         discount.scannedCodes_number += 1
 
+        discount.update()
         discount.clients_id.add(client)
-        discount.save()
 
         return Response({"Success Scanning the QR. Discount applied!"}, "200")
 
