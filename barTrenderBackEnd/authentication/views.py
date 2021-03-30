@@ -46,13 +46,3 @@ class login(APIView):
         }
 
         return Response(response, HTTP_200_OK)
-
-class testAll(APIView):
-    @token_required('all')
-    def get(self, request):
-        return Response("Has accedido!", HTTP_200_OK)
-
-class testOwner(APIView):
-    @token_required('owner')
-    def get(self, request):
-        return Response("Has accedido, owner!", HTTP_200_OK)
