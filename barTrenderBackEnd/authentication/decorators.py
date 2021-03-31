@@ -35,6 +35,9 @@ def token_required(rol):
             except:
                 return Response({"error": "No token Provided"}, HTTP_401_UNAUTHORIZED)
 
+            if token == None:
+                return Response({"error": "No token Provided"}, HTTP_401_UNAUTHORIZED)
+
             error = validateToken(token,rol)
             if error:
                 return Response({"error": error}, HTTP_401_UNAUTHORIZED)
