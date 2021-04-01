@@ -56,7 +56,7 @@ class EstablshimentUnitTest(TestCase):
             cost_number=0.5, 
             totalCodes_number=100, 
             scannedCodes_number=0, 
-            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(milliseconds=2), 
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(milliseconds=1), 
             establishment_id=self.establisment1)
 
     def test_filter_all_correct(self):
