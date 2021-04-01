@@ -234,5 +234,5 @@ class Establishments(APIView):
                 'zone': e.zone_enum, 
                 'tags': tags
             })
-
+            
         return Response(response, "200")
