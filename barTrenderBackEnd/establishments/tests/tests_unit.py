@@ -18,8 +18,6 @@ class EstablshimentUnitTest(TestCase):
         self.owner_user = User.objects.create_user('owner@gmail.com')
         self.client = Client.objects.create(birthday=datetime.datetime.now(),user=self.client_user)
         self.owner = Owner.objects.create(phone="123456789", user=self.owner_user)
-        self.client_token = utils.getToken(self.client_user, 'client')[0]
-        self.owner_token = utils.getToken(self.owner_user, 'owner')[0]
 
         self.factory = RequestFactory()
 
