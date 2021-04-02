@@ -471,6 +471,7 @@ class EstablishmentUnitTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
 
+
 class DiscountViewTest(TestCase):
     
     def setUp(self):
@@ -513,5 +514,3 @@ class DiscountViewTest(TestCase):
 
         self.discount.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
         self.discount.update()
-
-    
