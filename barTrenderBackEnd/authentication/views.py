@@ -20,12 +20,11 @@ class login(APIView):
         
         #Get data from request
         try:
-            body = json.loads(request.body)
+            body = request.data
+            email = body["email"]
+            password = body["password"]
         except:
             return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
-
-        email = body["email"]
-        password = body["password"]
 
         #Get the user if exists
         user = authenticate(username=email, password=password)
