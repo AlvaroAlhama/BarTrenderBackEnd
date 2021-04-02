@@ -3,7 +3,7 @@ from establishments.models import Type
 from django.core.validators import MinValueValidator
 
 
-class Counter(models.Model):
+class Ranking(models.Model):
     search_date = models.DateField(blank=False, null=False)
     filter_enum = models.CharField(blank=False, null=False, max_length=25, choices=Type.choices)
     type_text = models.CharField(max_length=100, blank=False, null=False)

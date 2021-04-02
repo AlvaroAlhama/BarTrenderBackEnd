@@ -13,7 +13,7 @@ class RankingStats(APIView):
         query_filter = Q(search_date__lt=datetime.now(), search_date__gte=datetime.now()-timedelta(days=30)) & \
                       Q(filter_enum=request.data["filter"])
 
-        all_rank = Counter.objects.filter(query_filter).values('type_text').annotate(Sum('value_number')).\
+        all_rank = Ranking.objects.filter(query_filter).values('type_text').annotate(Sum('value_number')).\
             order_by('-value_number__sum')
 
         response = {
