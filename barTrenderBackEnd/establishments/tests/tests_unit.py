@@ -4,12 +4,12 @@ from django.contrib.auth.models import User
 from authentication.models import Client, Owner
 from rest_framework.response import Response
 from django.conf import settings
-import authentication.utils as utils
 import datetime
 import pytz, json
 from establishments.models import Establishment, Tag, Discount
 from establishments.views import Establishments, ScanDiscount
 from authentication.views import *
+import establishments.utils as utils
 
 
 class ScanQRUnitTest(TestCase):
@@ -470,3 +470,48 @@ class EstablishmentUnitTest(TestCase):
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
+
+class DiscountViewTest(TestCase):
+    
+    def setUp(self):
+        # Users
+        self.client_user = User.objects.create_user('client@gmail.com')
+        self.owner_user = User.objects.create_user('owner@gmail.com')
+        self.client = Client.objects.create(birthday=datetime.datetime.now(),user=self.client_user)
+        self.owner = Owner.objects.create(phone="123456789", user=self.owner_user)
+
+        self.factory = RequestFactory()
+
+        # Establishments
+        self.establisment1 = Establishment.objects.create(
+            name_text="Bar Ejemplo Uno",
+            cif_text="B56316524",
+            phone_number="123456789",
+            zone_enum="Alameda",
+            verified_bool=True,
+            owner=self.owner
+        )
+
+        self.establisment2 = Establishment.objects.create(
+            name_text="Bar Ejemplo Dos",
+            cif_text="G20414124",
+            phone_number="123456788",
+            zone_enum="Triana",
+            verified_bool=True,
+            owner=self.owner
+        )
+
+        # Discount
+        self.discount = Discount.objects.create(
+            name_text='Descuento Uno', 
+            description_text='Descripción Uno', 
+            cost_number=0.5, 
+            totalCodes_number=100, 
+            scannedCodes_number=0, 
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(seconds=1),
+            establishment_id=self.establisment1)
+
+        self.discount.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
+        self.discount.update()
+
+    
