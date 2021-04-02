@@ -7,9 +7,256 @@ from django.conf import settings
 import datetime
 import pytz, json
 from establishments.models import Establishment, Tag, Discount
-from establishments.views import Establishments, ScanDiscount, Discounts
+from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR
 from authentication.views import *
 import establishments.utils as utils
+
+
+class GetDiscountViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+        # Owners
+        self.owner_user_one = User.objects.create_user(username='owner1@gmail.com', password="vekto1234")
+        self.owner_one = Owner.objects.create(phone="111111111", user=self.owner_user_one)
+
+        self.owner_user_two = User.objects.create_user('owner2@gmail.com')
+        self.owner_two = Owner.objects.create(phone="222222222", user=self.owner_user_two)
+
+        # Clients
+        self.client_user_one = User.objects.create_user(username='client1@gmail.com', password="vekto1234")
+        self.client = Client.objects.create(birthday=datetime.datetime.now(), user=self.client_user_one)
+
+        # Establishments
+        # Establishment of owner_one
+
+        self.establishment_one = Establishment.objects.create(
+            name_text="Bar Ejemplo Uno",
+            cif_text="B56316524",
+            phone_number="123456789",
+            zone_enum="Alameda",
+            verified_bool=True,
+            owner=self.owner_one
+        )
+
+        self.establishment_two = Establishment.objects.create(
+            name_text="Bar Ejemplo Dos",
+            cif_text="G20414124",
+            phone_number="123456788",
+            zone_enum="Triana",
+            verified_bool=True,
+            owner=self.owner_two
+        )
+
+        # Discounts
+        # Valid Discount Establishment One
+        self.discount_one = Discount.objects.create(
+            name_text='Descuento Uno',
+            description_text='Descripción Uno',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=0,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment_one)
+
+        self.discount_one.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
+        self.discount_one.update()
+
+        # Valid Discount Establishment Two
+        self.discount_two = Discount.objects.create(
+            name_text='Descuento Dos',
+            description_text='Descripción Dos',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=0,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment_two)
+        self.discount_two.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
+        self.discount_two.update()
+
+        # Valid Discounts but invalid for Scan
+        self.discount_invalid_future = Discount.objects.create(
+            name_text='Descuento Uno',
+            description_text='Descripción Uno',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=0,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment_one)
+
+        self.discount_invalid_expired = Discount.objects.create(
+            name_text='Descuento Uno',
+            description_text='Descripción Uno',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=0,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            end_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=2),
+            establishment_id=self.establishment_one)
+
+        self.discount_invalid_expired.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=2)
+        self.discount_invalid_expired.end_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
+        self.discount_invalid_expired.update()
+
+        self.discount_invalid_all_scanned = Discount.objects.create(
+            name_text='Descuento Uno',
+            description_text='Descripción Uno',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=100,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment_one)
+
+        self.discount_invalid_all_scanned.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
+        self.discount_invalid_all_scanned.update()
+
+        self.discount_invalid_client_already_scanned = Discount.objects.create(
+            name_text='Descuento Uno',
+            description_text='Descripción Uno',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=0,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment_one)
+
+        self.discount_invalid_client_already_scanned.clients_id.add(self.client)
+
+        self.discount_invalid_client_already_scanned.initial_date = datetime.datetime.now(
+            pytz.utc) - datetime.timedelta(days=1)
+        self.discount_invalid_client_already_scanned.update()
+
+    def login(self, username):
+        api_call = "/authentication/login"
+        request = self.factory.post(api_call)
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+
+        resp = login.post(self, request)
+
+        return resp.data["token"]
+
+    def test_valid_get_discount(self):
+        token = self.login(self.client.user.username)
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': self.establishment_one.id,
+            'discount_id': self.discount_one.id
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 200)
+
+    def test_invalid_establishment_invalid(self):
+        token = self.login(self.client.user.username)
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': 3,
+            'discount_id': self.discount_one.id
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(resp.data["error"], "E001: Establecimiento no existe")
+
+    def test_invalid_discount_does_not_exist(self):
+        token = self.login(self.client.user.username)
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': self.establishment_one.id,
+            'discount_id': 10
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(resp.data["error"], "D001: Descuento no existe")
+
+    def test_invalid_discount_invalid_establishment(self):
+        token = self.login(self.client.user.username)
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': self.establishment_two.id,
+            'discount_id': self.discount_one.id
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.data["error"], "D002: Descuento no pertenece al establecimiento")
+
+    def test_invalid_discount_initial_date_future(self):
+        token = self.login(self.client.user.username)
+
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': self.establishment_one.id,
+            'discount_id': self.discount_invalid_future.id,
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.data["error"], "D021: El descuento aun no ha comenzado")
+
+    def test_invalid_discount_expired(self):
+        token = self.login(self.client.user.username)
+
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': self.establishment_one.id,
+            'discount_id': self.discount_invalid_expired.id,
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.data["error"], "D003: El descuento ha expirado")
+
+    def test_invalid_discount_all_scanned(self):
+        token = self.login(self.client.user.username)
+
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': self.establishment_one.id,
+            'discount_id': self.discount_invalid_all_scanned.id,
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.data["error"], "D004: No quedan descuentos disponibles")
+
+    def test_invalid_discount_client_all_scanned(self):
+        token = self.login(self.client.user.username)
+
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+
+        url_data = {
+            'establishment_id': self.establishment_one.id,
+            'discount_id': self.discount_invalid_client_already_scanned.id,
+        }
+
+        resp = DiscountsQR.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.data["error"], "D005: Descuento ya escaneado por usuario")
 
 
 class ScanQRViewTest(TestCase):

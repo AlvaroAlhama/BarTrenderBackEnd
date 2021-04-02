@@ -25,6 +25,7 @@ def validate_discount(establishment_id, discount_id):
         # Error: object does not exist, return 404
         return generate_response("D001", '404')
 
+
 def validate_discount_request(discount):
     if "name" not in discount or "description" not in discount or "cost" not in discount or "initialDate" not in discount:
         return generate_response("D010", 400)
@@ -41,6 +42,7 @@ def validate_discount_request(discount):
 
     if "endDate" in discount:
         if discount["endDate"] < discount["initialDate"]: return generate_response("D014", 400)
+
 
 def validate_discount_update(discount, discount_id):
     if "name" not in discount or "description" not in discount or "cost" not in discount or "initialDate" not in discount:
@@ -86,6 +88,7 @@ def validate_discount_update(discount, discount_id):
 
     return None, discount_stored
 
+
 def validate_discount_delete(discount_id):
 
     discount = Discount.objects.get(id=discount_id)
@@ -102,7 +105,7 @@ def validate_establishment(establishment_id):
         Establishment.objects.get(id=establishment_id)
     except Establishment.DoesNotExist:
         # Error: object does not exist, return 404
-        return generate_response("E002", '404')
+        return generate_response("E001", '404')
 
 
 def validate_conditions(client, discount_id):
