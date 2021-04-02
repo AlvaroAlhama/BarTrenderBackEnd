@@ -137,8 +137,6 @@ class ScanQRUnitTest(TestCase):
 
         resp = login.post(self, request)
 
-        print(resp)
-
         return resp.data["token"]
 
     def test_valid_scan_qr(self):
