@@ -130,15 +130,10 @@ class ScanQRUnitTest(TestCase):
         self.discount_invalid_client_already_scanned.update()
 
     def login(self, username):
-        api_call = "/login"
+        api_call = "/authentication/login"
         request = self.factory.post(api_call)
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-
-        body = {
-            "email": username,
-            "password": "vekto1234"
-        }
-        request._body = json.dumps(body)
+        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
 
         resp = login.post(self, request)
         return resp.data["token"]
