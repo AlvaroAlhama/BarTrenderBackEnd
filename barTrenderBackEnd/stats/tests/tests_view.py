@@ -1,15 +1,9 @@
-from rest_framework.test import APIClient
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
-from authentication.models import Client, Owner
+from authentication.models import Owner
 from rest_framework.response import Response
 from django.conf import settings
-import datetime
-import pytz, json
-from establishments.models import Establishment, Tag, Discount
-from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR
-from authentication.views import *
-import establishments.utils as utils
+import json
 from stats.views import RankingStats
 from authentication.views import *
 

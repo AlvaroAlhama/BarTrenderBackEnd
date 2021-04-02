@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
-from ..models import *
+from stats.models import *
 from authentication.models import *
 import datetime
 from django.core.exceptions import ValidationError
