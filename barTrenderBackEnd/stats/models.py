@@ -11,3 +11,6 @@ class Counter(models.Model):
 
     def __str__(self):
         return self.type_text + " (" + str(self.search_date) + ")"
+
+    class Meta:
+        app_label = 'stats'
