@@ -17,5 +17,7 @@ urlpatterns = [
     # Delete Discount
     path('<int:establishment_id>/discounts/<int:discount_id>/delete', Discounts.as_view()),
     #Get Establishment By Establishment Id
-    path('owner/<int:establishment_id>/get', Establishment_By_EstablishmentId.as_view())
+    path('<int:establishment_id>/get', Establishment_By_EstablishmentId.as_view()),
+    # Get Establishments by logged owner since owner is fetched from token
+    path('get_by_owner', EstablishmentsByOwner.as_view())
 ]

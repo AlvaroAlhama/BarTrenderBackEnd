@@ -7,7 +7,7 @@ from django.conf import settings
 import datetime
 import pytz, json
 from establishments.models import Establishment, Tag, Discount
-from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR, Establishment_By_EstablishmentId
+from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR, Establishment_By_EstablishmentId, EstablishmentsByOwner
 from authentication.views import *
 import establishments.utils as utils
 
@@ -556,8 +556,10 @@ class EstablishmentViewTest(TestCase):
         # Users
         self.client_user = User.objects.create_user(username='client@gmail.com', password="vekto1234")
         self.owner_user = User.objects.create_user(username='owner@gmail.com', password="vekto1234")
+        self.owner_user_two = User.objects.create_user(username='owner2@gmail.com', password="vekto1234")
         self.client = Client.objects.create(birthday=datetime.datetime.now(),user=self.client_user)
         self.owner = Owner.objects.create(phone="123456789", user=self.owner_user)
+        self.owner_two = Owner.objects.create(phone="222222222", user=self.owner_user_two)
 
         self.factory = RequestFactory()
 
@@ -731,7 +733,7 @@ class EstablishmentViewTest(TestCase):
 
     def test_get_establishment_by_establishment_id_ok(self):
         token = self.login(self.owner_user.username)
-        request = self.factory.get("owner/<int:establishment_id>/get")
+        request = self.factory.get("<int:establishment_id>/get")
         request.headers = {'token': token, 'Content-Type': 'application/json'}
         url_data = { 'establishment_id': self.establisment1.id }
         resp = Establishment_By_EstablishmentId.get(self, request, **url_data)
@@ -742,12 +744,32 @@ class EstablishmentViewTest(TestCase):
     
     def test_get_establishment_by_establishment_id_bad_id(self):
         token = self.login(self.owner_user.username)
-        request = self.factory.get("owner/<int:establishment_id>/get")
+        request = self.factory.get("<int:establishment_id>/get")
         request.headers = {'token': token, 'Content-Type': 'application/json'}
         url_data = { 'establishment_id': 52 }
         resp = Establishment_By_EstablishmentId.get(self, request, **url_data)
         self.assertEqual(resp.status_code, 400)
         self.assertTrue("E002" in str(resp.data["error"]))
+
+    def test_get_establishment_by_owner(self):
+        token = self.login(self.owner_user.username)
+
+        request = self.factory.get("/get_by_owner")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        resp = EstablishmentsByOwner.get(self, request)
+
+        self.assertEqual(resp.status_code, 200)
+
+    def test_invalid_get_establishment_by_owner_not_exists(self):
+        token = self.login(self.owner_two.user.username)
+        self.owner_two.delete()
+
+        request = self.factory.get("/get_by_owner")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        resp = EstablishmentsByOwner.get(self, request)
+
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(resp.data["error"], "A002: Owner no existe")
 
 
 class DiscountViewTest(TestCase):
