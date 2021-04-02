@@ -7,7 +7,7 @@ from django.conf import settings
 import datetime
 import pytz, json
 from establishments.models import Establishment, Tag, Discount
-from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR
+from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR, Establishment_By_EstablishmentId
 from authentication.views import *
 import establishments.utils as utils
 
@@ -554,8 +554,8 @@ class EstablishmentViewTest(TestCase):
     
     def setUp(self):
         # Users
-        self.client_user = User.objects.create_user('client@gmail.com')
-        self.owner_user = User.objects.create_user('owner@gmail.com')
+        self.client_user = User.objects.create_user(username='client@gmail.com', password="vekto1234")
+        self.owner_user = User.objects.create_user(username='owner@gmail.com', password="vekto1234")
         self.client = Client.objects.create(birthday=datetime.datetime.now(),user=self.client_user)
         self.owner = Owner.objects.create(phone="123456789", user=self.owner_user)
 
@@ -599,6 +599,16 @@ class EstablishmentViewTest(TestCase):
 
         self.discount.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
         self.discount.update()
+
+    def login(self, username):
+        api_call = "/authentication/login"
+        request = self.factory.post(api_call)
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+
+        resp = login.post(self, request)
+
+        return resp.data["token"]
 
     def test_filter_all_correct(self):
 
@@ -718,6 +728,26 @@ class EstablishmentViewTest(TestCase):
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
+
+    def test_get_establishment_by_establishment_id_ok(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.get("owner/<int:establishment_id>/get")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id': self.establisment1.id }
+        resp = Establishment_By_EstablishmentId.get(self, request, **url_data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["establishment"]['name'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data["establishment"]['phone'], 123456789)
+        self.assertEqual(resp.data["discounts"][0]["name"], 'Descuento Uno')
+    
+    def test_get_establishment_by_establishment_id_bad_id(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.get("owner/<int:establishment_id>/get")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id': 52 }
+        resp = Establishment_By_EstablishmentId.get(self, request, **url_data)
+        self.assertEqual(resp.status_code, 400)
+        self.assertTrue("E002" in str(resp.data["error"]))
 
 
 class DiscountViewTest(TestCase):
