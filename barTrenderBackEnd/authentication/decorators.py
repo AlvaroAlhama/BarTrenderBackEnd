@@ -5,23 +5,18 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from authentication.utils import validateToken
 from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_400_BAD_REQUEST,
-    HTTP_401_UNAUTHORIZED
-)
 from django.conf import settings
+from barTrenderBackEnd.errors import generate_response
 
 def apikey_required(view_func):
     def wrapped(self, request, **kwargs):
         try:
             apiKey = request.headers["apiKey"]
         except:
-            return Response({"error": "No API KEY Provided"}, HTTP_401_UNAUTHORIZED)
+            return generate_response("A003", 401)
         
         if apiKey != settings.API_KEY:
-            return Response({"error": "A400"}, HTTP_401_UNAUTHORIZED)
+            return generate_response("A004", 401)
         return view_func(self, request, **kwargs)
 
     return wrapped
@@ -33,14 +28,14 @@ def token_required(rol):
             try:
                 token = request.headers["token"]
             except:
-                return Response({"error": "No token Provided"}, HTTP_401_UNAUTHORIZED)
+                return generate_response("A005", 401)
 
             if token == None:
-                return Response({"error": "No token Provided"}, HTTP_401_UNAUTHORIZED)
+                return generate_response("A005", 401)
 
             error = validateToken(token,rol)
             if error:
-                return Response({"error": error}, HTTP_401_UNAUTHORIZED)
+                return generate_response(error, 401)
 
             return view_func(self, request, **kwargs)
 
