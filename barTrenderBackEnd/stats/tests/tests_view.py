@@ -1,14 +1,20 @@
+from rest_framework.test import APIClient
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
-from authentication.models import Owner
+from authentication.models import Client, Owner
 from rest_framework.response import Response
 from django.conf import settings
-import json
+import datetime
+import pytz, json
+from establishments.models import Establishment, Tag, Discount
+from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR
+from authentication.views import *
+import establishments.utils as utils
 from stats.views import RankingStats
 from authentication.views import *
 
 
-class StatsUnitTest(TestCase):
+class StatsViewTest(TestCase):
 
     def setUp(self):
 
