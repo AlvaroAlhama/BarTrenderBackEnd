@@ -34,7 +34,7 @@ class AuthenticationUnitTest(TestCase):
 
     def test_validate_token_Error(self):
         error = utils.validateToken(self.client_token, "owner")
-        self.assertEqual(error, "You dont have permission to access this site")
+        self.assertEqual(error, "A008")
 
     def test_get_user_from_token(self):
         user = utils.getUserFromToken(self.client_token)

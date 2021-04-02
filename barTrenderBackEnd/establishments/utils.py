@@ -10,41 +10,7 @@ from django.utils import timezone
 from django.db.models import Q, F
 from datetime import datetime
 import math
-
-
-# ERROR MSG
-
-errors = {
-    'A001': 'Client no existe',
-    'A002': 'Owner no existe',
-    'E001': 'Establecimiento no existe',
-    'E002': 'El establecimiento no pertenece al dueño',
-    'D001': 'Descuento no existe',
-    'D002': 'Descuento no pertenece al establecimiento',
-    'D003': 'El descuento ha expirado',
-    'D004': 'No quedan descuentos disponibles',
-    'D005': 'Descuento ya escaneado por usuario',
-    'D010': 'Campos obligatorios no proporcionados',
-    'D011': 'El coste no puede ser menor que 0',
-    'D012': 'El total de códigos no puede ser menor que 0',
-    'D013': 'La fecha inicial no puede estar en el pasado',
-    'D014': 'La fecha de finalización debe ser posterior a la inicial',
-    'D015': 'El total de códigos no puede ser menor que 0 ni que el número de códigos escaneados',
-    'D016': 'La fecha de finalización debe ser posterior a la inicial y posterior a la actual',
-    'D017': 'Los parámetros nombre, descripción, coste, fecha de inicio y códigos escaneados no pueden ser modificados una vez empezado el descuento',
-    'D018': 'El número de códigos escaneados no puede ser diferente de 0',
-    'D019': 'No se puede modificar un descuento que haya caducado',
-    'D020': 'No se puede eliminar un descuento que haya comenzado y tenga códigos escaneados',
-    'D021': 'El descuento aun no ha comenzado',
-}
-
-
-def generate_response(code, status):
-    body = {
-        'error': str(code) + ": " + errors[code]
-    }
-
-    return Response(body, status)
+from barTrenderBackEnd.errors import generate_response
 
 
 def validate_discount(establishment_id, discount_id):
@@ -61,62 +27,62 @@ def validate_discount(establishment_id, discount_id):
 
 def validate_discount_request(discount):
     if "name" not in discount or "description" not in discount or "cost" not in discount or "initialDate" not in discount:
-        return generate_response("D010", "400")
+        return generate_response("D010", 400)
 
     if discount["name"]=="" or discount["description"]=="" or discount["cost"]=="" or discount["initialDate"]=="" or discount["name"]==None or discount["description"]==None or discount["cost"]==None or discount["initialDate"]==None:
         return generate_response("D010", "400")
 
-    if discount["cost"] < 0: return generate_response("D011", "400")
+    if discount["cost"] < 0: return generate_response("D011", 400)
 
     if "totalCodes" in discount:
-        if discount["totalCodes"] <= 0 : return generate_response("D012", "400")
+        if discount["totalCodes"] <= 0 : return generate_response("D012", 400)
     
-    if discount["initialDate"] < time.time() - 10: return generate_response("D013", "400")
+    if discount["initialDate"] < time.time() - 10: return generate_response("D013", 400)
 
     if "endDate" in discount:
-        if discount["endDate"] < discount["initialDate"]: return generate_response("D014", "400")
+        if discount["endDate"] < discount["initialDate"]: return generate_response("D014", 400)
 
 def validate_discount_update(discount, discount_id):
     if "name" not in discount or "description" not in discount or "cost" not in discount or "initialDate" not in discount:
-        return generate_response("D010", "400"), None
+        return generate_response("D010", 400), None
 
     if (discount["name"]=="" or discount["description"]=="" or discount["cost"]=="" or discount["initialDate"]=="" 
     or discount["name"]==None or discount["description"]==None or discount["cost"]==None or discount["initialDate"]==None):
-        return generate_response("D010", "400"), None
+        return generate_response("D010", 400), None
     
     discount_stored = Discount.objects.get(id=discount_id)
 
     if datetime.timestamp(discount_stored.initial_date) > time.time():
 
-        if discount["cost"] < 0: return generate_response("D011", "400"), None
+        if discount["cost"] < 0: return generate_response("D011", 400), None
 
         if "totalCodes" in discount:
-            if discount["totalCodes"] <= 0 : return generate_response("D012", "400"), None
+            if discount["totalCodes"] <= 0 : return generate_response("D012", 400), None
         
-        if discount["initialDate"] < time.time() - 10: return generate_response("D013", "400"), None
+        if discount["initialDate"] < time.time() - 10: return generate_response("D013", 400), None
 
         if "endDate" in discount:
-            if discount["endDate"] < discount["initialDate"]: return generate_response("D014", "400"), None
+            if discount["endDate"] < discount["initialDate"]: return generate_response("D014", 400), None
 
         if "scannedCodes" in discount:
-            if discount["scannedCodes"] < 0: return generate_response("D018", "400"), None
+            if discount["scannedCodes"] < 0: return generate_response("D018", 400), None
 
     elif not (datetime.timestamp(discount_stored.initial_date) > time.time() or (discount_stored.end_date != None and datetime.timestamp(discount_stored.end_date) < time.time())
     or (discount_stored.totalCodes_number != None and discount_stored.scannedCodes_number >= discount_stored.totalCodes_number)):
 
         if "totalCodes" in discount:
-            if discount["totalCodes"] <= 0 or discount['totalCodes'] < discount_stored.scannedCodes_number : return generate_response("D015", "400"), None
+            if discount["totalCodes"] <= 0 or discount['totalCodes'] < discount_stored.scannedCodes_number : return generate_response("D015", 400), None
 
         if "endDate" in discount:
-            if discount["endDate"] < discount["initialDate"] or discount['endDate'] < time.time(): return generate_response("D016", "400"), None
+            if discount["endDate"] < discount["initialDate"] or discount['endDate'] < time.time(): return generate_response("D016", 400), None
 
         if (discount_stored.name_text != discount['name'] or discount_stored.description_text != discount['description']
         or discount_stored.cost_number != discount['cost'] or datetime.timestamp(discount_stored.initial_date) != discount["initialDate"]
         or discount_stored.scannedCodes_number != discount['scannedCodes']):
-            return generate_response("D017", "400"), None
+            return generate_response("D017", 400), None
 
     else:
-        return generate_response("D019", "400"), None
+        return generate_response("D019", 400), None
 
     return None, discount_stored
 
@@ -125,7 +91,7 @@ def validate_discount_delete(discount_id):
     discount = Discount.objects.get(id=discount_id)
 
     if datetime.timestamp(discount.initial_date) < time.time() and discount.scannedCodes_number > 0:
-        return generate_response("D020", "400"), None
+        return generate_response("D020", 400), None
 
     return None, discount
 

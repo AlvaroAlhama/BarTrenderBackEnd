@@ -5,22 +5,17 @@ from authentication.utils import *
 from .utils import *
 from .serializers import *
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_400_BAD_REQUEST,
-    HTTP_401_UNAUTHORIZED
-)
 from django.utils import timezone
 import pytz
 from datetime import datetime
 from django.db.models import Q, F
+from barTrenderBackEnd.errors import generate_response
 
 
 class Discounts(APIView):
     @apikey_required
     def get(self, request, establishment_id):
-
+        
         # globals params
 
         validations = validate_establishment(establishment_id)
@@ -29,14 +24,14 @@ class Discounts(APIView):
 
         paginator = PageNumberPagination()
         paginator.page_size = 7
-
+        print(request.GET['all'])
         if request.GET['all'] is None or request.GET['all'] == "False":
             discounts = get_valid_discounts(establishment_id, False)
         else:
             discounts = get_valid_discounts(establishment_id, True)
 
         if discounts is None:
-            return Response({"No valid query"}, '400')
+            return generate_response("D022", 400)
 
         context = paginator.paginate_queryset(discounts, request)
         serializer = DiscountSerializer(context, many=True)
@@ -50,7 +45,7 @@ class Discounts(APIView):
         if valid is not None: return valid
 
         try: discount = request.data
-        except: return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+        except: return generate_response("Z001", 400)
 
         valid = validate_discount_request(discount)
         if valid is not None: return valid
@@ -62,7 +57,7 @@ class Discounts(APIView):
                                 scannedCodes_number=0, initial_date=datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid')), end_date=endDate, 
                                 establishment_id=Establishment.objects.get(id=establishment_id))
 
-        return Response({"msg":"The discount has been created"}, HTTP_201_CREATED)
+        return Response({"msg":"The discount has been created"}, 201)
 
     @token_required("owner")
     def put(self, request, establishment_id, discount_id):
@@ -74,7 +69,7 @@ class Discounts(APIView):
         if valid is not None: return valid
 
         try: discount = request.data
-        except: return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+        except: return generate_response("Z001", 400)
 
         valid, discount_stored = validate_discount_update(discount, discount_id)
         if valid is not None: return valid
@@ -95,7 +90,7 @@ class Discounts(APIView):
         discount_stored.establishment_id = Establishment.objects.get(id=establishment_id)
         discount_stored.update()
 
-        return Response({"msg":"The discount has been updated"}, HTTP_200_OK)
+        return Response({"msg":"The discount has been updated"}, 200)
     
     @token_required("owner")
     def delete(self, request, establishment_id, discount_id):
@@ -112,7 +107,7 @@ class Discounts(APIView):
         #Delete discount
         discount.delete()
 
-        return Response({"msg":"The discount has been deleted"}, HTTP_200_OK)
+        return Response({"msg":"The discount has been deleted"}, 200)
 
 
 class DiscountsQR(APIView):
@@ -190,7 +185,7 @@ class Establishments(APIView):
         try:
             filters = request.data["filters"]
         except:
-            return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+            return generate_response("Z001", 400)
 
         # Filter by zone if exist
         zone_filter = {} if not "zones" in filters else {'zone_enum__in': filters["zones"]}

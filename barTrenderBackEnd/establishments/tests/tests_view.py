@@ -7,12 +7,12 @@ from django.conf import settings
 import datetime
 import pytz, json
 from establishments.models import Establishment, Tag, Discount
-from establishments.views import Establishments, ScanDiscount
+from establishments.views import Establishments, ScanDiscount, Discounts
 from authentication.views import *
 import establishments.utils as utils
 
 
-class ScanQRUnitTest(TestCase):
+class ScanQRViewTest(TestCase):
 
     def setUp(self):
 
@@ -303,7 +303,7 @@ class ScanQRUnitTest(TestCase):
         self.assertEqual(resp.data["error"], "D005: Descuento ya escaneado por usuario")
 
 
-class EstablishmentUnitTest(TestCase):
+class EstablishmentViewTest(TestCase):
     
     def setUp(self):
         # Users
@@ -387,7 +387,7 @@ class EstablishmentUnitTest(TestCase):
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{}')
         resp = Establishments.post(self, request)
-        self.assertEqual(resp.status_code, 401)
+        self.assertEqual(resp.status_code, 400)
 
     def test_filter_without_api(self):
 
@@ -477,15 +477,15 @@ class DiscountViewTest(TestCase):
     
     def setUp(self):
         # Users
-        self.client_user = User.objects.create_user('client@gmail.com')
-        self.owner_user = User.objects.create_user('owner@gmail.com')
+        self.client_user = User.objects.create_user(username='client@gmail.com', password="vekto1234")
+        self.owner_user = User.objects.create_user(username='owner@gmail.com', password="vekto1234")
         self.client = Client.objects.create(birthday=datetime.datetime.now(),user=self.client_user)
         self.owner = Owner.objects.create(phone="123456789", user=self.owner_user)
 
         self.factory = RequestFactory()
 
         # Establishments
-        self.establisment1 = Establishment.objects.create(
+        self.establishment1 = Establishment.objects.create(
             name_text="Bar Ejemplo Uno",
             cif_text="B56316524",
             phone_number="123456789",
@@ -493,8 +493,7 @@ class DiscountViewTest(TestCase):
             verified_bool=True,
             owner=self.owner
         )
-
-        self.establisment2 = Establishment.objects.create(
+        self.establishment2 = Establishment.objects.create(
             name_text="Bar Ejemplo Dos",
             cif_text="G20414124",
             phone_number="123456788",
@@ -503,15 +502,203 @@ class DiscountViewTest(TestCase):
             owner=self.owner
         )
 
-        # Discount
-        self.discount = Discount.objects.create(
-            name_text='Descuento Uno', 
-            description_text='Descripción Uno', 
-            cost_number=0.5, 
-            totalCodes_number=100, 
-            scannedCodes_number=0, 
-            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(seconds=1),
-            establishment_id=self.establisment1)
+        # Discounts
+        self.discount_one = Discount.objects.create(
+            name_text='Descuento Uno',
+            description_text='Descripción Uno',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=20,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment1)
 
-        self.discount.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
-        self.discount.update()
+        self.discount_one.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
+        self.discount_one.update()
+
+        self.discount_two = Discount.objects.create(
+            name_text='Descuento Dos',
+            description_text='Descripción Dos',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=0,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment2)
+        self.discount_two.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
+        self.discount_two.update()
+
+    def login(self, username):
+        api_call = "/authentication/login"
+        request = self.factory.post(api_call)
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+
+        resp = login.post(self, request)
+
+        return resp.data["token"]
+
+    """
+    def test_get_discount_ok(self):
+
+        request = self.factory.get("<int:establishment_id>/discounts/get?all=False")
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+
+        url_data = { 'establishment_id': self.establishment1.id }
+
+        resp = Discounts.get(self, request, **url_data)
+        print(resp.data)
+    
+    """
+    
+    def test_create_discount_ok(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/create")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id': self.establishment1.id }
+        request.data = {
+            "name": "discount chupiguay",
+            "description": "descripción peta",
+            "cost": 0.5,
+            "totalCodes": 5,
+            "initialDate": datetime.datetime.timestamp(datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=4)),
+            "endDate": 	datetime.datetime.timestamp(datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=10))
+        }
+
+        prev_discounts = Discount.objects.all().count()
+        resp = Discounts.post(self, request, **url_data)
+        after_discounts = Discount.objects.all().count()
+
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(prev_discounts + 1, after_discounts)
+        self.assertEqual(resp.data["msg"], "The discount has been created")
+
+    def test_create_discount_past_initial_date_past(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/create")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id': self.establishment1.id }
+        request.data = {
+            "name": "discount chupiguay",
+            "description": "descripción peta",
+            "cost": 0.5,
+            "totalCodes": 5,
+            "initialDate": datetime.datetime.timestamp(datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=4)),
+            "endDate": 	datetime.datetime.timestamp(datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=10))
+        }
+
+        prev_discounts = Discount.objects.all().count()
+        resp = Discounts.post(self, request, **url_data)
+        after_discounts = Discount.objects.all().count()
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(prev_discounts, after_discounts)
+        self.assertTrue("D013" in str(resp.data["error"]))
+
+    def test_create_discount_past_total_codes_lt_0(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/create")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id': self.establishment1.id }
+        request.data = {
+            "name": "discount chupiguay",
+            "description": "descripción peta",
+            "cost": 0.5,
+            "totalCodes": -5,
+            "initialDate": datetime.datetime.timestamp(datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=4)),
+            "endDate": 	datetime.datetime.timestamp(datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=10))
+        }
+
+        prev_discounts = Discount.objects.all().count()
+        resp = Discounts.post(self, request, **url_data)
+        after_discounts = Discount.objects.all().count()
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(prev_discounts, after_discounts)
+        self.assertTrue("D012" in str(resp.data["error"]))
+
+    def test_create_discount_past_no_payload(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/create")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id': self.establishment1.id }
+
+        prev_discounts = Discount.objects.all().count()
+        resp = Discounts.post(self, request, **url_data)
+        after_discounts = Discount.objects.all().count()
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(prev_discounts, after_discounts)
+        self.assertTrue("Z001" in str(resp.data["error"]))
+    
+    def test_update_discount_ok(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/<int:discount_id>/update")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id':self.establishment1.id, 'discount_id':self.discount_one.id }
+        request.data = {
+            "name": self.discount_one.name_text,
+            "description": self.discount_one.description_text,
+            "cost": self.discount_one.cost_number,
+            "totalCodes": 200,
+            "initialDate": datetime.datetime.timestamp(self.discount_one.initial_date),
+            "scannedCodes": self.discount_one.scannedCodes_number
+        }
+
+        resp = Discounts.put(self, request, **url_data)
+
+        discount = Discount.objects.get(id=self.discount_one.id)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(discount.totalCodes_number, 200)
+        self.assertEqual(resp.data["msg"], "The discount has been updated")
+
+    def test_update_discount_scanned_codes_below_total(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/<int:discount_id>/update")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id':self.establishment1.id, 'discount_id':self.discount_one.id }
+        request.data = {
+            "name": self.discount_one.name_text,
+            "description": self.discount_one.description_text,
+            "cost": self.discount_one.cost_number,
+            "totalCodes": self.discount_one.totalCodes_number,
+            "initialDate": datetime.datetime.timestamp(self.discount_one.initial_date),
+            "scannedCodes": 10
+        }
+
+        resp = Discounts.put(self, request, **url_data)
+
+        discount = Discount.objects.get(id=self.discount_one.id)
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(discount.scannedCodes_number, 20)
+        self.assertTrue("D017" in str(resp.data["error"]))
+
+    def test_delete_discount_ok(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/<int:discount_id>/delete")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id':self.establishment2.id, 'discount_id':self.discount_two.id }
+
+        prev_discounts = Discount.objects.all().count()
+        resp = Discounts.delete(self, request, **url_data)
+        after_discounts = Discount.objects.all().count()
+        
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(prev_discounts-1, after_discounts)
+        self.assertEqual(resp.data["msg"], "The discount has been deleted")
+
+    def test_delete_discount_scanned_codes_fail(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/<int:discount_id>/delete")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id':self.establishment1.id, 'discount_id':self.discount_one.id }
+
+        prev_discounts = Discount.objects.all().count()
+        resp = Discounts.delete(self, request, **url_data)
+        after_discounts = Discount.objects.all().count()
+        
+
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(prev_discounts, after_discounts)
+        self.assertTrue("D020" in str(resp.data["error"]))
