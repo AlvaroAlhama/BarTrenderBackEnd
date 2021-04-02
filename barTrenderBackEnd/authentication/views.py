@@ -20,12 +20,11 @@ class login(APIView):
         
         #Get data from request
         try:
-            body = json.loads(request.body)
+            body = request.data
+            email = body["email"]
+            password = body["password"]
         except:
             return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
-
-        email = body["email"]
-        password = body["password"]
 
         #Get the user if exists
         user = authenticate(username=email, password=password)
@@ -46,13 +45,3 @@ class login(APIView):
         }
 
         return Response(response, HTTP_200_OK)
-
-class testAll(APIView):
-    @token_required('all')
-    def get(self, request):
-        return Response("Has accedido!", HTTP_200_OK)
-
-class testOwner(APIView):
-    @token_required('owner')
-    def get(self, request):
-        return Response("Has accedido, owner!", HTTP_200_OK)

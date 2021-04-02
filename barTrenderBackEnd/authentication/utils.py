@@ -32,7 +32,12 @@ def getToken(user, rol):
     return jwt.encode(payload, settings.TOKEN_SECRET, algorithm="HS256"), expiresIn
 
 def validateToken(token, rol):
-    decoded = jwt.decode(token, settings.TOKEN_SECRET, algorithms=["HS256"])
+    decoded = None
+    try:
+        decoded = jwt.decode(token, settings.TOKEN_SECRET, algorithms=["HS256"])
+    except:
+        return "Invalid Token"
+        
     decodedExpiresIn = decoded["expiresIn"]
     decodedRol = decoded["rol"]
 
