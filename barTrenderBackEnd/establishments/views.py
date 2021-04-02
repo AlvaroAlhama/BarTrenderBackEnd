@@ -108,10 +108,12 @@ class Discounts(APIView):
 
         valid, discount = validate_discount_delete(discount_id)
         if valid is not None: return valid
+
         #Delete discount
         discount.delete()
 
         return Response({"msg":"The discount has been deleted"}, HTTP_200_OK)
+
 
 class DiscountsQR(APIView):
     @token_required("client")
@@ -177,7 +179,7 @@ class ScanDiscount(APIView):
         discount.update()
         discount.clients_id.add(client)
 
-        return Response({"Success Scanning the QR. Discount applied!"}, "200")
+        return Response({"msg": "Success Scanning the QR. Discount applied!"}, "200")
 
 
 class Establishments(APIView):

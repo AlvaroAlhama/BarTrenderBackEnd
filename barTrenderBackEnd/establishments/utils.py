@@ -16,7 +16,7 @@ import math
 
 errors = {
     'A001': 'Client no existe',
-    'A002': 'Client no existe',
+    'A002': 'Owner no existe',
     'E001': 'Establecimiento no existe',
     'E002': 'El establecimiento no pertenece al dueño',
     'D001': 'Descuento no existe',
