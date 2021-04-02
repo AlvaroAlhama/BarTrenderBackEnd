@@ -273,3 +273,18 @@ class Establishment_By_EstablishmentId(APIView):
 
         return Response(response, 200)
 
+
+class EstablishmentsByOwner(APIView):
+
+    @token_required("owner")
+    def get(self, request):
+
+        try:
+            owner = get_owner(request)
+        except Owner.DoesNotExist:
+            return generate_response("A002", '404')
+
+        establishments = Establishment.objects.filter(owner=owner.id)
+        serializer = EstablishmentSerializer(establishments, many=True)
+
+        return Response(serializer.data, 200)
