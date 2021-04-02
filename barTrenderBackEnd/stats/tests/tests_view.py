@@ -4,7 +4,6 @@ from authentication.models import Owner
 from rest_framework.response import Response
 from django.conf import settings
 import json
-from stats.models import Counter
 from stats.views import RankingStats
 from authentication.views import *
 
