@@ -319,7 +319,7 @@ class DiscountsTestCases(TransactionTestCase):
         client = Client.objects.get(user=User.objects.get(username='client@gmail.com'))
         prev_count = Discount.objects.all().count()
 
-        discount = create_discount(initial_date=timezone.now()+ datetime.timedelta(days=40))
+        discount = create_discount(initial_date=timezone.now() + datetime.timedelta(days=40))
         discount.save()
         discount.clients_id.add(client)
 
