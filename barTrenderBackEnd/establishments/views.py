@@ -233,3 +233,43 @@ class Establishments(APIView):
             })
             
         return Response(response, "200")
+
+
+class Establishment_By_EstablishmentId(APIView):
+
+    @token_required('owner')
+    def get(self, request, establishment_id):
+        
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None: return valid
+
+        establishment = Establishment.objects.get(id=establishment_id)
+        discounts = Discount.objects.filter(establishment_id=establishment)
+        
+        ds = []
+
+        for d in discounts:
+            ds.append({
+                "id": d.id,
+                "name": d.name_text,
+                "description": d.description_text,
+                "cost": d.cost_number,
+                "totalCodes": d.totalCodes_number,
+                "scannedCodes": d.scannedCodes_number,
+                "initialDate": int(datetime.timestamp(d.initial_date)),
+                "endDate": None if d.end_date == None else int(datetime.timestamp(d.end_date))
+            })
+
+        response = {
+            "establishment": {
+                'id': establishment.id,
+                'name': establishment.name_text,
+                'phone': establishment.phone_number,
+                'zone': establishment.zone_enum, 
+                'tags': establishment.tags.all().values("name", "type")
+            },
+            "discounts": ds
+        }
+
+        return Response(response, 200)
+
