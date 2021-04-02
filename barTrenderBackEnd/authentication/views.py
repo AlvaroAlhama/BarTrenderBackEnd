@@ -1,11 +1,5 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_400_BAD_REQUEST,
-    HTTP_401_UNAUTHORIZED
-)
 from rest_framework.views import APIView
 import json
 from authentication.models import Client, Owner
@@ -13,6 +7,7 @@ from authentication.utils import getToken, getRol
 from authentication.decorators import token_required, apikey_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from barTrenderBackEnd.errors import generate_response
 
 
 class login(APIView):
@@ -25,16 +20,16 @@ class login(APIView):
             email = body["email"]
             password = body["password"]
         except:
-            return Response({"error": "Incorrect Payload"}, HTTP_401_UNAUTHORIZED)
+            return generate_response("Z001", 401)
 
         #Get the user if exists
         user = authenticate(username=email, password=password)
         if user is None:
-            return Response({"error": "Email or password incorrect"}, HTTP_401_UNAUTHORIZED)
+            return generate_response("A009", 401)
         
         rol = getRol(user)
         if rol == None:
-            return Response({"error": "Sorry my friend"}, HTTP_401_UNAUTHORIZED)
+            return generate_response("A010", 401)
 
         #Generate the token with the correct claims
         token, expiresIn = getToken(user, rol)
@@ -45,4 +40,4 @@ class login(APIView):
             'rol': rol
         }
 
-        return Response(response, HTTP_200_OK)
+        return Response(response, 200)

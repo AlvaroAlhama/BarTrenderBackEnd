@@ -36,16 +36,16 @@ def validateToken(token, rol):
     try:
         decoded = jwt.decode(token, settings.TOKEN_SECRET, algorithms=["HS256"])
     except:
-        return "Invalid Token"
+        return "A006"
         
     decodedExpiresIn = decoded["expiresIn"]
     decodedRol = decoded["rol"]
 
     if decodedExpiresIn < int(time.time()):
-        return "Token Expired"
+        return "A007"
     if rol != "all":
         if decodedRol != rol:
-            return "You dont have permission to access this site"
+            return "A008"
 
     return None
 
