@@ -16,11 +16,15 @@ class login(APIView):
         
         #Get data from request
         try:
-            body = request.data
-            email = body["email"]
-            password = body["password"]
+            body = json.loads(request.body)
         except:
             return generate_response("Z001", 401)
+
+        if 'email' not in body or 'password' not in body:
+            return generate_response("Z001", 401)
+
+        email = body["email"]
+        password = body["password"]
 
         #Get the user if exists
         user = authenticate(username=email, password=password)
