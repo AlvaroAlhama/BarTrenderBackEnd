@@ -1,6 +1,5 @@
 from pathlib import Path
 import django_heroku
-import environ
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -10,17 +9,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-env = environ.Env()
-environ.Env.read_env()
 
-SECRET_KEY = env('DJANGO_SECRET_KEY')
-API_KEY = env('API_KEY')
-TOKEN_SECRET = env('TOKEN_SECRET')
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+API_KEY = os.environ['API_KEY']
+TOKEN_SECRET = os.environ['TOKEN_SECRET']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -57,7 +54,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-'''
 CORS_ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
@@ -65,11 +61,8 @@ CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:8000',
   'http://localhost:5000',
   'http://127.0.0.1:5000',
-  # Add front urls when deployed
+  # Add the url when deployed
 ]
-'''
-
-CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_HEADERS = (
     'accept',
@@ -134,9 +127,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -158,5 +148,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-django_heroku.settings(locals())

@@ -3,3 +3,8 @@ djangorestframework
 django-cors-headers
 qrcode
 pillow
+pyjwt
+coverage
+django-heroku
+gunicorn
+django-environ

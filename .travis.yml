@@ -1,0 +1,33 @@
+language: python 
+python: 
+- "3.9"
+env: 
+- DJANGO=3.1.7 DB=sqlite
+install:
+  - pip install -r requirements.txt
+  - pip install codacy-coverage
+script:
+  - export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+  - export API_KEY=$API_KEY
+  - export TOKEN_SECRET=$TOKEN_SECRET
+  - cd barTrenderBackEnd
+  - cd barTrenderBackEnd
+  - cp travis_settings.py settings.py
+  - cd ..
+  - coverage run --branch --source=. ./manage.py test --keepdb
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
+deploy:
+  - provider: heroku
+    app: develop-backend-sprint-01
+    strategy: git
+    api_key: $HEROKU_API_KEY
+    on:
+      branch: develop
+
+  - provider: heroku
+    app: main-backend-sprint-01
+    strategy: git
+    api_key: $HEROKU_API_KEY
+    on:
+      branch: main
