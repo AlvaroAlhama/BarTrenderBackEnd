@@ -187,6 +187,9 @@ def get_valid_discounts(establishment_id, all):
 def generate_qr(request, token, host, establishment_id, discount_id):
     # Client
 
+    if request.GET['custom_host'] is "":
+        return generate_response("D023", '400')
+
     user = getUserFromToken(token)
     client = Client.objects.get(user=user)
 

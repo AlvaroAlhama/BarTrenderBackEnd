@@ -137,7 +137,7 @@ class GetDiscountViewTest(TestCase):
 
     def test_valid_get_discount(self):
         token = self.login(self.client.user.username)
-        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR")
+        request = self.factory.get("<int:establishment_id>/discounts/<int:discount_id>/getQR?custom_host=localhost:8000")
         request.headers = {'token': token, 'Content-Type': 'application/json'}
 
         url_data = {
