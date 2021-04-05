@@ -24,10 +24,3 @@ deploy:
     api_key: $HEROKU_API_KEY
     on:
       branch: develop
-
-  - provider: heroku
-    app: main-backend-sprint-01
-    strategy: git
-    api_key: $HEROKU_API_KEY
-    on:
-      branch: main
