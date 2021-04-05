@@ -17,7 +17,7 @@ class AuthenticationViewTest(TestCase):
     def test_login_ok(self):
         request = self.factory.post("/authentication/login")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"client@gmail.com", "password":"password"}')
+        request._body = json.dumps({"email":"client@gmail.com", "password":"password"})
         resp = login.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertIsNotNone(resp.data["token"])
@@ -26,7 +26,7 @@ class AuthenticationViewTest(TestCase):
     def test_login_bad_password(self):
         request = self.factory.post("/authentication/login")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"client@gmail.com", "password":"bad"}')
+        request._body = json.dumps({"email":"client@gmail.com", "password":"bad"})
         resp = login.post(self, request)
         self.assertEqual(resp.status_code, 401)
         self.assertTrue('A009' in str(resp.data["error"]))
@@ -34,7 +34,7 @@ class AuthenticationViewTest(TestCase):
     def test_login_bad_user(self):
         request = self.factory.post("/authentication/login")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"fake@gmail.com", "password":"password"}')
+        request._body = json.dumps({"email":"fake@gmail.com", "password":"password"})
         resp = login.post(self, request)
         self.assertEqual(resp.status_code, 401)
         self.assertTrue('A009' in str(resp.data["error"]))
@@ -42,7 +42,7 @@ class AuthenticationViewTest(TestCase):
     def test_login_bad_request_data(self):
         request = self.factory.post("/authentication/login")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"client@gmail.com"}')
+        request._body = json.dumps({"email":"client@gmail.com"})
         resp = login.post(self, request)
         self.assertEqual(resp.status_code, 401)
         self.assertTrue('Z001' in str(resp.data["error"]))
@@ -50,7 +50,7 @@ class AuthenticationViewTest(TestCase):
     def test_bad_apiKey(self):
         request = self.factory.post("/authentication/login")
         request.headers = {'apiKey': "badApiKey", 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"client@gmail.com", "password":"password"}')
+        request._body = json.dumps({"email":"client@gmail.com", "password":"password"})
         resp = login.post(self, request)
         self.assertEqual(resp.status_code, 401)
         self.assertTrue('A004' in str(resp.data["error"]))
@@ -58,7 +58,7 @@ class AuthenticationViewTest(TestCase):
     def test_no_apiKey(self):
         request = self.factory.post("/authentication/login")
         request.headers = {'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"client@gmail.com", "password":"password"}')
+        request._body = json.dumps({"email":"client@gmail.com", "password":"password"})
         resp = login.post(self, request)
         self.assertEqual(resp.status_code, 401)
         self.assertTrue('A003' in str(resp.data["error"]))
@@ -66,7 +66,7 @@ class AuthenticationViewTest(TestCase):
     def test_no_apiKey(self):
         request = self.factory.post("/authentication/login")
         request.headers = {'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"client@gmail.com", "password":"password"}')
+        request._body = json.dumps({"email":"client@gmail.com", "password":"password"})
         resp = login.post(self, request)
         self.assertEqual(resp.status_code, 401)
         self.assertTrue('A003' in str(resp.data["error"]))

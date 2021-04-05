@@ -22,7 +22,7 @@ class StatsViewTest(TestCase):
         api_call = "/authentication/login"
         request = self.factory.post(api_call)
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+        request._body = json.dumps({"email": username , "password":"vekto1234"})
 
         resp = login.post(self, request)
 

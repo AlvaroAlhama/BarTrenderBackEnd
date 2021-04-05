@@ -129,7 +129,7 @@ class GetDiscountViewTest(TestCase):
         api_call = "/authentication/login"
         request = self.factory.post(api_call)
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+        request._body = json.dumps({"email": str(username), "password":"vekto1234"})
 
         resp = login.post(self, request)
 
@@ -380,7 +380,7 @@ class ScanQRViewTest(TestCase):
         api_call = "/authentication/login"
         request = self.factory.post(api_call)
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+        request._body = json.dumps({"email": str(username), "password":"vekto1234"})
 
         resp = login.post(self, request)
 
@@ -606,7 +606,7 @@ class EstablishmentViewTest(TestCase):
         api_call = "/authentication/login"
         request = self.factory.post(api_call)
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+        request._body = json.dumps({"email": str(username), "password":"vekto1234"})
 
         resp = login.post(self, request)
 
@@ -829,7 +829,7 @@ class DiscountViewTest(TestCase):
         api_call = "/authentication/login"
         request = self.factory.post(api_call)
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
-        request.data = json.loads('{"email":"' + username + '", "password":"vekto1234"}')
+        request._body = json.dumps({"email": str(username), "password":"vekto1234"})
 
         resp = login.post(self, request)
 
