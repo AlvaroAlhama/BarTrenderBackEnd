@@ -31,6 +31,7 @@ errors = {
     'D020': 'No se puede eliminar un descuento que haya comenzado y tenga códigos escaneados',
     'D021': 'El descuento aun no ha comenzado',
     'D022': 'Query invalida',
+    'D023': 'Invalid Host',
     'Z001': 'Faltan campos obligatorios en el cuerpo de la petición',
 }
 
