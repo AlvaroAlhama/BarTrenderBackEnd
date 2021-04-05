@@ -132,7 +132,7 @@ class DiscountsQR(APIView):
             return validations
 
         # Return correct QR
-        qr = generate_qr(request, token, request.get_host(), establishment_id, discount_id)
+        qr = generate_qr(request, token, request.GET['custom_host'], establishment_id, discount_id)
         return HttpResponse(qr, status="200", content_type="image/png")
 
 
