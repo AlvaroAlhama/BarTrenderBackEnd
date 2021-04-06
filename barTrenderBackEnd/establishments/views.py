@@ -198,6 +198,10 @@ class Establishments(APIView):
         leisure_filter = {} if not "leisures" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["leisures"], type="Ocio")}
 
+        # Filter by style
+        style_filter = {} if not "styles" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["styles"], type="Estilo")}
+
         # Filter by Discount:
         # Get all the establishment that have discounts, filter the establishment by this ids
         discount_filter = ''
@@ -215,10 +219,10 @@ class Establishments(APIView):
         # Search establishments
         if discount_filter != '':
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(discount_filter)    
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(discount_filter)    
         else:
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter)
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter)
 
         response = []
 
@@ -288,3 +292,14 @@ class EstablishmentsByOwner(APIView):
         serializer = EstablishmentSerializer(establishments, many=True)
 
         return Response(serializer.data, 200)
+
+class Tags(APIView):
+    @apikey_required
+    def get(self, request):
+
+        tags = Tag.objects.all().values('name', 'type')
+
+        response = {'tags': tags}
+
+        return Response(response, 200)
+
