@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from authentication.models import Client, Owner
 from authentication.views import login, signup
 from django.conf import settings
-import datetime, json
+import datetime
+import json
 
 class AuthenticationViewTest(TestCase):
 

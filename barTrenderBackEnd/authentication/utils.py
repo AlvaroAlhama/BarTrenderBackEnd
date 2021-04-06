@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from authentication.models import Client, Owner
 from django.conf import settings
 import json, pytz, re, time, jwt
-from datetime import datetime
+import datetime
 
 HOURS = 24
 
@@ -88,9 +88,9 @@ def validateSignupData(body):
             return "Z003"
 
     if("birthday" in body):
-        try: datetime.fromtimestamp(body["birthday"], pytz.timezone('Europe/Madrid'))
+        try: datetime.datetime.fromtimestamp(body["birthday"], pytz.timezone('Europe/Madrid'))
         except: return "Z002"
-    
+
     return None
 
 def createUser(body):
@@ -111,7 +111,7 @@ def createUser(body):
             else:
                 return None, "A012"
     elif body["rol"] == "client":
-        try: Client.objects.create(user=user, birthday=datetime.fromtimestamp(body["birthday"], pytz.timezone('Europe/Madrid')))
+        try: Client.objects.create(user=user, birthday=datetime.datetime.fromtimestamp(body["birthday"], pytz.timezone('Europe/Madrid')))
         except Exception as ex: 
             print(ex)
             return None, "A012"
