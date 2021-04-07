@@ -191,7 +191,7 @@ class EstablishmentsTestCase(TransactionTestCase):
     def test_invalid_establishment_phone(self):
 
         prev_count = Establishment.objects.all().count()
-        establishment = create_establishment(phone=1234567890)
+        establishment = create_establishment(phone="1234567890")
 
         with self.assertRaises(ValidationError) as context:
             if establishment.full_clean():
@@ -199,7 +199,7 @@ class EstablishmentsTestCase(TransactionTestCase):
 
         new_count = Establishment.objects.all().count()
 
-        self.assertTrue('“%(value)s” value must be an integer.' in str(context.exception))
+        self.assertTrue('value must be an integer.' in str(context.exception))
         self.assertTrue(new_count - prev_count == 0)
 
     def test_invalid_establishment_phone_blank(self):
