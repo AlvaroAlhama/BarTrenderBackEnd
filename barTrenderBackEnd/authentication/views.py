@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import json
 from authentication.models import Client, Owner
-from authentication.utils import getToken, getRol
+from authentication.utils import *
 from authentication.decorators import token_required, apikey_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -45,3 +45,32 @@ class login(APIView):
         }
 
         return Response(response, 200)
+
+class signup(APIView):
+    @apikey_required
+    def post(self, request):
+        
+        #Get data from request
+        body, err = getSignupData(request)
+        if err != None: return generate_response(err, 401)
+
+        #Validate the data
+        valid = validateSignupData(body)
+        if valid is not None: return generate_response(valid,401)
+        
+        #Create the user
+        user, err = createUser(body)
+        if err is not None: return generate_response(err, 400)
+
+        #Generate the token
+        token, expiresIn = getToken(user, body["rol"])
+
+        response = {
+            'token': token,
+            'expiresIn': expiresIn,
+            'rol': body["rol"],
+            'email': body["email"],
+            'msg': 'Usuario creado correctamente'
+        }
+
+        return Response(response,200)
