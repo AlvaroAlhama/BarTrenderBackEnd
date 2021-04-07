@@ -208,6 +208,11 @@ class Establishments(APIView):
             'tags__in': Tag.objects.filter(name__in=filters["Ambiente"], type="Ambiente")}
 
 
+        # Filter by circle
+        circle_filter = {} if not "Ambientes" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Ambientes"], type="Ambiente")}
+
+
         # Filter by Discount:
         # Get all the establishment that have discounts, filter the establishment by this ids
         discount_filter = ''
