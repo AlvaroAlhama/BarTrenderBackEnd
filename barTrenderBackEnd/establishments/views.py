@@ -188,19 +188,20 @@ class Establishments(APIView):
             return generate_response("Z001", 400)
 
         # Filter by zone if exist
-        zone_filter = {} if not "zones" in filters else {'zone_enum__in': filters["zones"]}
+        zone_filter = {} if not "Zonas" in filters else {'zone_enum__in': filters["Zonas"]}
 
         # Filter by beer
-        beer_filter = {} if not "beers" in filters else {
-            'tags__in': Tag.objects.filter(name__in=filters["beers"], type="Bebida")}
+        beer_filter = {} if not "Bebidas" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Bebidas"], type="Bebida")}
         
         # Filter by leisure
-        leisure_filter = {} if not "leisures" in filters else {
-            'tags__in': Tag.objects.filter(name__in=filters["leisures"], type="Ocio")}
+        leisure_filter = {} if not "Ocios" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Ocios"], type="Ocio")}
 
         # Filter by style
-        style_filter = {} if not "styles" in filters else {
-            'tags__in': Tag.objects.filter(name__in=filters["styles"], type="Estilo")}
+        style_filter = {} if not "Estilos" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Estilos"], type="Estilo")}
+
 
         # Filter by Discount:
         # Get all the establishment that have discounts, filter the establishment by this ids
@@ -299,7 +300,15 @@ class Tags(APIView):
 
         tags = Tag.objects.all().values('name', 'type')
 
-        response = {'tags': tags}
+        zones = Establishment.objects.all().values('zone_enum').distinct()
 
+        response = {'tags': []}
+
+        for tag in tags:
+            response['tags'].append({'name': tag['name'], 'type': tag['type']})
+
+        for zone in zones:
+            response['tags'].append({'name': zone['zone_enum'], 'type': 'Zona'})
+     
         return Response(response, 200)
 
