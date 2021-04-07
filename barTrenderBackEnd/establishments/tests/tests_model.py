@@ -199,7 +199,7 @@ class EstablishmentsTestCase(TransactionTestCase):
 
         new_count = Establishment.objects.all().count()
 
-        self.assertTrue('“%(value)s” value must be an integer.' in str(context.exception))
+        self.assertTrue('value must be an integer.' in str(context.exception))
         self.assertTrue(new_count - prev_count == 0)
 
     def test_invalid_establishment_phone_blank(self):
