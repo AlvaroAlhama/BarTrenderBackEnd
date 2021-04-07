@@ -2,15 +2,14 @@ from rest_framework.views import APIView, Response
 from authentication.decorators import token_required, apikey_required
 from .models import *
 from django.db.models import Q, F
-from datetime import datetime, timedelta
+import datetime
 from django.db.models import Sum
-
 
 class RankingStats(APIView):
     @token_required("owner")
     def post(self, request):
 
-        query_filter = Q(search_date__lt=datetime.now(), search_date__gte=datetime.now()-timedelta(days=30)) & \
+        query_filter = Q(search_date__lt=datetime.datetime.now(), search_date__gte=datetime.datetime.now()-datetime.timedelta(days=30)) & \
                       Q(filter_enum=request.data["filter"])
 
         all_rank = Ranking.objects.filter(query_filter).values('type_text').annotate(Sum('value_number')).\

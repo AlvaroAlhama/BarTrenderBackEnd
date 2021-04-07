@@ -7,7 +7,7 @@ from .serializers import *
 from rest_framework.pagination import PageNumberPagination
 from django.utils import timezone
 import pytz
-from datetime import datetime
+import datetime
 from django.db.models import Q, F
 from barTrenderBackEnd.errors import generate_response
 
@@ -51,10 +51,10 @@ class Discounts(APIView):
         if valid is not None: return valid
 
         totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
-        endDate = datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
+        endDate = datetime.datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
         #Generate the discount
         Discount.objects.create(name_text=discount["name"], description_text=discount["description"], cost_number=discount["cost"], totalCodes_number=totalCodes,
-                                scannedCodes_number=0, initial_date=datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid')), end_date=endDate, 
+                                scannedCodes_number=0, initial_date=datetime.datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid')), end_date=endDate, 
                                 establishment_id=Establishment.objects.get(id=establishment_id))
 
         return Response({"msg":"The discount has been created"}, 201)
@@ -75,7 +75,7 @@ class Discounts(APIView):
         if valid is not None: return valid
 
         totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
-        endDate = datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
+        endDate = datetime.datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
         scannedCodes = discount["scannedCodes"] if "scannedCodes" in discount else 0
 
         #Update the discount
@@ -85,7 +85,7 @@ class Discounts(APIView):
         discount_stored.totalCodes_number = totalCodes
         discount_stored.scannedCodes_number = scannedCodes
         if discount["initialDate"] > time.time():
-            discount_stored.initial_date = datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid'))
+            discount_stored.initial_date = datetime.datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid'))
         discount_stored.end_date = endDate
         discount_stored.establishment_id = Establishment.objects.get(id=establishment_id)
         discount_stored.update()
@@ -187,8 +187,10 @@ class Establishments(APIView):
         except:
             return generate_response("Z001", 400)
 
+        # save the search for statistics
+        save_search(filters)
+        
         # Filter by zone if exist
-
         zone_filter = {} if not "Zona" in filters else {'zone_enum__in': filters["Zona"]}
 
         # Filter by beer
@@ -267,8 +269,8 @@ class Establishment_By_EstablishmentId(APIView):
                 "cost": d.cost_number,
                 "totalCodes": d.totalCodes_number,
                 "scannedCodes": d.scannedCodes_number,
-                "initialDate": int(datetime.timestamp(d.initial_date)),
-                "endDate": None if d.end_date == None else int(datetime.timestamp(d.end_date))
+                "initialDate": int(datetime.datetime.timestamp(d.initial_date)),
+                "endDate": None if d.end_date == None else int(datetime.datetime.timestamp(d.end_date))
             })
 
         response = {
