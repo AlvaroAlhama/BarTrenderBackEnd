@@ -188,25 +188,24 @@ class Establishments(APIView):
             return generate_response("Z001", 400)
 
         # Filter by zone if exist
-        zone_filter = {} if not "Zonas" in filters else {'zone_enum__in': filters["Zonas"]}
+
+        zone_filter = {} if not "Zona" in filters else {'zone_enum__in': filters["Zona"]}
 
         # Filter by beer
-        beer_filter = {} if not "Bebidas" in filters else {
-            'tags__in': Tag.objects.filter(name__in=filters["Bebidas"], type="Bebida")}
+        beer_filter = {} if not "Bebida" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Bebida"], type="Bebida")}
         
         # Filter by leisure
-        leisure_filter = {} if not "Ocios" in filters else {
-            'tags__in': Tag.objects.filter(name__in=filters["Ocios"], type="Ocio")}
+        leisure_filter = {} if not "Ocio" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Ocio"], type="Ocio")}
 
         # Filter by style
-        style_filter = {} if not "Estilos" in filters else {
-            'tags__in': Tag.objects.filter(name__in=filters["Estilos"], type="Estilo")}
-
+        style_filter = {} if not "Estilo" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Estilo"], type="Estilo")}
 
         # Filter by circle
-        circle_filter = {} if not "Ambientes" in filters else {
-            'tags__in': Tag.objects.filter(name__in=filters["Ambientes"], type="Ambiente")}
-
+        circle_filter = {} if not "Ambiente" in filters else {
+            'tags__in': Tag.objects.filter(name__in=filters["Ambiente"], type="Ambiente")}
 
         # Filter by Discount:
         # Get all the establishment that have discounts, filter the establishment by this ids
