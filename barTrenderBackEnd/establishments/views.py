@@ -188,6 +188,7 @@ class Establishments(APIView):
             return generate_response("Z001", 400)
 
         # Filter by zone if exist
+
         zone_filter = {} if not "Zona" in filters else {'zone_enum__in': filters["Zona"]}
 
         # Filter by beer
@@ -205,6 +206,7 @@ class Establishments(APIView):
         # Filter by circle
         circle_filter = {} if not "Ambiente" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["Ambiente"], type="Ambiente")}
+
 
         # Filter by Discount:
         # Get all the establishment that have discounts, filter the establishment by this ids

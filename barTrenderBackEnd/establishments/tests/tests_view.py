@@ -619,6 +619,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Bebida": ["Cruzcampo"], "Ocio": ["Billar"], "Zona": ["Alameda"], "Estilo": ["Arabe"], "Ambiente": ["Joven"], "discounts": true}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
@@ -663,6 +664,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Ocio": ["Billar"], "Zona": ["Alameda"], "Estilo": ["Arabe"], "Ambiente": ["Joven"], "discounts": false}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
@@ -675,6 +677,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Bebida": ["Cruzcampo"], "Zona": ["Alameda"], "Estilo": ["Arabe"], "Ambiente": ["Joven"], "discounts": false}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
@@ -687,6 +690,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Ocio": ["Billar"], "Bebida": ["Cruzcampo"], "Estilo": ["Arabe"], "Ambiente": ["Joven"], "discounts": false}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
@@ -699,6 +703,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Bebida": ["Cruzcampo"], "Ocio": ["Billar"], "Zona": ["Alameda"], "Estilo": ["Arabe"], "Ambiente": ["Joven"]}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
@@ -711,6 +716,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Bebida": ["Cruzcampo"], "Ocio": ["Billar"], "Zona": ["Alameda"], "Ambiente": ["Joven"], "discounts": false}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
@@ -735,6 +741,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Bebida": ["Paulaner"]}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
@@ -744,6 +751,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Ocio": ["Dardos"]}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
@@ -753,6 +761,7 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Zona": ["Reina Mercedes"]}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
@@ -761,6 +770,7 @@ class EstablishmentViewTest(TestCase):
 
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+
         request.data = json.loads('{"filters": {"Estilo": ["Ambiente deportivo"]}}')
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
@@ -771,9 +781,11 @@ class EstablishmentViewTest(TestCase):
         request = self.factory.post("/establishments/get")
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"Ambiente": ["Viejo"]}}')
+
         resp = Establishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
+
 
     def test_get_establishment_by_establishment_id_ok(self):
         token = self.login(self.owner_user.username)
