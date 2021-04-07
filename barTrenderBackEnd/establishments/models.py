@@ -6,6 +6,7 @@ from .validators import *
 # ENUM
 
 class Type(models.TextChoices):
+    A = "Ambiente"
     B = "Bebida"
     E = "Estilo"
     I = "Instalacion"
