@@ -9,14 +9,16 @@ def create_ranking(
         search_date=datetime.datetime.now(),
         filter_enum='Bebida',
         type_text='Cruzcampo',
-        value_number=10
+        value_number=10,
+        zone_enum='Triana'
         ):
 
     return Ranking(
         search_date=search_date,
         filter_enum=filter_enum,
         type_text=type_text,
-        value_number=value_number
+        value_number=value_number,
+        zone_enum=zone_enum
     )
 
 
@@ -38,6 +40,16 @@ class RankingTestCase(TransactionTestCase):
         new_count = Ranking.objects.all().count()
 
         self.assertTrue(new_count - prev_count == 1)
+
+    def test_valid_Ranking_no_zone(self):
+        prev_count = Ranking.objects.all().count()
+        ranking = create_ranking(type_text='Paulaner', zone_enum=None)
+        ranking.save()
+        new_count = Ranking.objects.all().count()
+        new_ranking = Ranking.objects.filter(search_date=datetime.datetime.now(), filter_enum='Bebida', type_text='Paulaner', value_number=10, zone_enum=None).get()
+
+        self.assertTrue(new_count - prev_count == 1)
+        self.assertTrue(new_ranking != None)
 
     def test_invalid_Ranking_date_null(self):
 

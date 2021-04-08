@@ -8,3 +8,4 @@ coverage
 django-heroku
 gunicorn
 django-environ
+python-dateutil

@@ -587,7 +587,7 @@ class EstablishmentViewTest(TestCase):
             cif_text="G20414124",
             phone_number="123456788",
             zone_enum="Triana",
-            verified_bool=True,
+            verified_bool=False,
             owner=self.owner
         )
 
@@ -639,10 +639,7 @@ class EstablishmentViewTest(TestCase):
         self.assertEqual(resp.data[0]['phone'], 123456789)
         self.assertEqual(resp.data[0]['zone'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
-        self.assertEqual(resp.data[1]['name'], 'Bar Ejemplo Dos')
-        self.assertEqual(resp.data[1]['phone'], 123456788)
-        self.assertEqual(resp.data[1]['zone'], 'Triana')
-        self.assertEqual(len(resp.data[1]['tags']), 0)
+        self.assertEqual(len(resp.data), 1)
 
     def test_filter_wrong_payload(self):
 

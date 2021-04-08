@@ -226,10 +226,10 @@ class Establishments(APIView):
         # Search establishments
         if discount_filter != '':
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(discount_filter)    
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(discount_filter).filter(verified_bool=True)    
         else:
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter)
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(verified_bool=True)
 
         establishments = establishments.distinct()
 

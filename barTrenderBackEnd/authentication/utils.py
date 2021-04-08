@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from authentication.models import Client, Owner
 from django.conf import settings
+from dateutil.relativedelta import relativedelta
 import json, pytz, re, time, jwt
 import datetime
 
@@ -118,3 +119,28 @@ def createUser(body):
 
     return user, None
 
+def setpremium(token):
+
+    user = getUserFromToken(token)
+    owner = Owner.objects.filter(user=user).get()
+
+    #TODO Check payment is real
+    owner.premium = True
+    owner.premium_end_date = datetime.datetime.now(pytz.utc) + relativedelta(months=+1)
+
+    owner.save()
+
+def isPremium(user, rol):
+    if rol == 'client':
+        return False
+    
+    owner = Owner.objects.filter(user=user).get()
+    if not owner.premium:
+        return False
+
+    if owner.premium_end_date < datetime.date.today():
+        owner.premium = False
+        owner.save()
+        return False
+    
+    return True

@@ -38,10 +38,13 @@ class login(APIView):
         #Generate the token with the correct claims
         token, expiresIn = getToken(user, rol)
 
+        premium = isPremium(user, rol)
+
         response = {
             'token': token,
             'expiresIn': expiresIn,
-            'rol': rol
+            'rol': rol,
+            'premium': premium
         }
 
         return Response(response, 200)
@@ -70,7 +73,27 @@ class signup(APIView):
             'expiresIn': expiresIn,
             'rol': body["rol"],
             'email': body["email"],
-            'msg': 'Usuario creado correctamente'
+            'msg': 'Usuario creado correctamente',
+            'premium': False
+        }
+
+        return Response(response,200)
+
+class SetPremium(APIView):
+    @token_required('owner')
+    def post(self, request):
+        
+        #Get data from request
+        try:
+            body = request.body
+        except:
+            return generate_response("Z001", 400)
+
+        setpremium(request.headers['token'])
+        
+        response = {
+            'body': body,
+            'msg': 'Premium pagado'
         }
 
         return Response(response,200)

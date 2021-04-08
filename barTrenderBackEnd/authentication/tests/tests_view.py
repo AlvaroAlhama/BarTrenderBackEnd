@@ -1,12 +1,23 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
 from authentication.models import Client, Owner
-from authentication.views import login, signup
+from authentication.views import login, signup, SetPremium
 from django.conf import settings
-import datetime
+from dateutil.relativedelta import relativedelta
+import datetime, pytz
 import json
 
 class AuthenticationViewTest(TestCase):
+
+    def login(self, username):
+        api_call = "/authentication/login"
+        request = self.factory.post(api_call)
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+        request._body = json.dumps({"email": str(username), "password":"password"})
+
+        resp = login.post(self, request)
+
+        return resp.data["token"]
 
     def setUp(self):
         # Users
@@ -14,6 +25,10 @@ class AuthenticationViewTest(TestCase):
         self.client = Client.objects.create(birthday=datetime.datetime.now(),user=self.client_user)
         self.owner_user = User.objects.create_user(username='owner@gmail.com', password="password")
         self.owner = Owner.objects.create(phone=954954954,user=self.owner_user)
+        self.owner_user_premium = User.objects.create_user(username='owner1@gmail.com', password="password")
+        self.owner_premium = Owner.objects.create(phone=954954955,user=self.owner_user_premium, premium=True, premium_end_date=datetime.date.today() + relativedelta(months=+1))
+        self.owner_user_premium_past = User.objects.create_user(username='owner2@gmail.com', password="password")
+        self.owner_premium_past = Owner.objects.create(phone=954954956,user=self.owner_user_premium_past, premium=True, premium_end_date=datetime.date.today() - relativedelta(months=+1))
 
         self.factory = RequestFactory()
 
@@ -25,6 +40,27 @@ class AuthenticationViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIsNotNone(resp.data["token"])
         self.assertEqual(resp.data['rol'], "client")
+        self.assertEqual(resp.data['premium'], False)
+
+    def test_login_premium_ok(self):
+        request = self.factory.post("/authentication/login")
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+        request._body = json.dumps({"email":"owner1@gmail.com", "password":"password"})
+        resp = login.post(self, request)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsNotNone(resp.data["token"])
+        self.assertEqual(resp.data['rol'], "owner")
+        self.assertEqual(resp.data['premium'], True)
+
+    def test_login_premium_past(self):
+        request = self.factory.post("/authentication/login")
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+        request._body = json.dumps({"email":"owner2@gmail.com", "password":"password"})
+        resp = login.post(self, request)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsNotNone(resp.data["token"])
+        self.assertEqual(resp.data['rol'], "owner")
+        self.assertEqual(resp.data['premium'], False)
 
     def test_login_bad_password(self):
         request = self.factory.post("/authentication/login")
@@ -196,3 +232,19 @@ class AuthenticationViewTest(TestCase):
         self.assertEqual(resp.status_code, 401)
         self.assertTrue(new_count - prev_count == 0)
         self.assertTrue("A011" in str(resp.data["error"]))
+
+    def test_set_premium_ok(self):
+        token = self.login(self.owner.user.username)
+        request = self.factory.post("/authentication/setpremium")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        request._body = json.dumps({})
+
+        response = SetPremium.post(self, request)
+
+        new_owner = Owner.objects.filter(user=self.owner.user).get()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(new_owner.premium, True)
+        self.assertEqual(new_owner.premium_end_date, datetime.date.today() + relativedelta(months=+1))
+
+    #TODO Test try verificate payment
