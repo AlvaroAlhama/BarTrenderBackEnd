@@ -14,6 +14,9 @@ script:
   - cd barTrenderBackEnd
   - cp travis_settings.py settings.py
   - cd ..
+  - ./manage.py flush
+  - ./manage.py makemigrations
+  - ./manage.py migrate
   - coverage run --branch --source=. ./manage.py test --keepdb
   - coverage xml
   - python-codacy-coverage -r coverage.xml
