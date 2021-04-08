@@ -4,8 +4,10 @@ from .views import *
 urlpatterns = [
     # Get QR
     path('<int:establishment_id>/discounts/<int:discount_id>/getQR', DiscountsQR.as_view()),
+    # Create Establishment
+    path('create', Establishments.as_view()),
     # Get Establishments By Filters
-    path('get', Establishments.as_view()),
+    path('get', FilterEstablishments.as_view()),
     # Scan Code
     path('<int:establishment_id>/discounts/<int:discount_id>/client/<int:client_id>/scan', ScanDiscount.as_view()),
     # Get Discount from establishment

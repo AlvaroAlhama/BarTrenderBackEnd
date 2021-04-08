@@ -19,6 +19,7 @@ errors = {
     'A016': 'La contraseña debe contener 8 dígitos, y al menos una mayúscula, una minúscula, un número y un caracter especial',
     'E001': 'Establecimiento no existe',
     'E002': 'El establecimiento no pertenece al dueño',
+    'E003': 'Las etiquetas indicadas no existen',
     'D001': 'Descuento no existe',
     'D002': 'Descuento no pertenece al establecimiento',
     'D003': 'El descuento ha expirado',
@@ -40,8 +41,9 @@ errors = {
     'D023': 'Invalid Host',
     'Z001': 'Faltan campos obligatorios en el cuerpo de la petición',
     'Z002': 'Timestamp no valido',
-    'Z003': 'Teléfono no válido'
+    'Z003': 'Teléfono no válido',
 }
+
 
 def generate_response(code, status):
     body = {
