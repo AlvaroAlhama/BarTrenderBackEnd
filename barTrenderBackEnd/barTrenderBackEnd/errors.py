@@ -40,8 +40,10 @@ errors = {
     'D023': 'Invalid Host',
     'Z001': 'Faltan campos obligatorios en el cuerpo de la petición',
     'Z002': 'Timestamp no valido',
-    'Z003': 'Teléfono no válido'
+    'Z003': 'Teléfono no válido',
+    'E00X': 'Ha ocurrido un error inesperado. Contacte con el administrador'
 }
+
 
 def generate_response(code, status):
     body = {
