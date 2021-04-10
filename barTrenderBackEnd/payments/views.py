@@ -70,14 +70,15 @@ class MakePayment(APIView):
         else:
             token = token.data['token']
 
-        order_status = paypal_api_call_order(request.data['order_id'], token)
-        if order_status.status_code != 200:
-            return order_status
-        else:
-            order_status = order_status.data['status']
+        order = paypal_api_call_order(request.data['order_id'], token)
+        if order.status_code != 200:
+            return order
 
-        if order_status != "COMPLETED":
+        if order.data['status'] != "COMPLETED":
             return generate_response("P001", 400)
+
+        if order.data['create_time'] != request.data['create_time']:
+            return generate_response("P002", 400)
 
         try:
             # Get discounts from establishment_id
@@ -139,4 +140,10 @@ def paypal_api_call_order(order_id, token):
     if orders.status_code != 200:
         return generate_response("API002", 400)
     else:
-        return Response({"status": json.loads(orders.content)['status']}, 200)
+        data = json.loads(orders.content)
+
+        return Response(
+            {
+                "status": data['status'],
+                "create_time": data["create_time"]
+            }, 200)

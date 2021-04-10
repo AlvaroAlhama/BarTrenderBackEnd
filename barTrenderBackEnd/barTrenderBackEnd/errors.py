@@ -39,6 +39,7 @@ errors = {
     'D022': 'Query invalida',
     'D023': 'Invalid Host',
     'P001': 'El pago aun no ha sido efectuado en paypal. Verifiquelo.',
+    'P002': 'Las fechas del pago no coinciden. Sospechoso...',
     'Z001': 'Faltan campos obligatorios en el cuerpo de la petición',
     'Z002': 'Timestamp no valido',
     'Z003': 'Teléfono no válido',
