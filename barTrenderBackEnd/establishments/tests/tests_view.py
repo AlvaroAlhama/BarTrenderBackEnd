@@ -10,6 +10,7 @@ from establishments.models import Establishment, Tag, Discount
 from establishments.views import Establishments, ScanDiscount, Discounts, DiscountsQR, Establishment_By_EstablishmentId, EstablishmentsByOwner, Tags
 from authentication.views import *
 import establishments.utils as utils
+from payments.models import *
 
 
 class GetDiscountViewTest(TestCase):
@@ -313,6 +314,13 @@ class ScanQRViewTest(TestCase):
 
         self.discount_one.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=1)
         self.discount_one.update()
+
+        # Create a Payment model
+        self.payment = Payment.objects.create(
+            pay_date=self.discount_one.initial_date + datetime.timedelta(days=30),
+            scanned_number=self.discount_one.scannedCodes_number,
+            discount_id=self.discount_one
+        )
 
         # Valid Discount Establishment Two
         self.discount_two = Discount.objects.create(
