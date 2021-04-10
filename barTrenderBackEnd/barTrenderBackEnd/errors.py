@@ -38,10 +38,13 @@ errors = {
     'D021': 'El descuento aun no ha comenzado',
     'D022': 'Query invalida',
     'D023': 'Invalid Host',
+    'P001': 'El pago aun no ha sido efectuado en paypal. Verifiquelo.',
     'Z001': 'Faltan campos obligatorios en el cuerpo de la petición',
     'Z002': 'Timestamp no valido',
     'Z003': 'Teléfono no válido',
-    'E00X': 'Ha ocurrido un error inesperado. Contacte con el administrador'
+    'E00X': 'Ha ocurrido un error inesperado. Contacte con el administrador',
+    'API001': 'Error al obtener el token de auth de paypal',
+    'API002': 'Error con las orders de paypal. ¿Has puesto bien el ID?',
 }
 
 

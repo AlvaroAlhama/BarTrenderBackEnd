@@ -9,6 +9,10 @@ import math
 from .utils import *
 import barTrenderBackEnd.errors
 import datetime
+import base64
+import requests
+import os
+import ast
 
 
 class CalculatePayment(APIView):
@@ -60,6 +64,21 @@ class MakePayment(APIView):
         if validations is not None:
             return validations
 
+        token = get_paypal_token(os.environ.get('PAYPAL_CLIENT_ID'), os.environ.get('PAYPAL_CLIENT_SECRET'))
+        if token.status_code != 200:
+            return token
+        else:
+            token = token.data['token']
+
+        order_status = paypal_api_call_order(request.data['order_id'], token)
+        if order_status.status_code != 200:
+            return order_status
+        else:
+            order_status = order_status.data['status']
+
+        if order_status != "COMPLETED":
+            return generate_response("P001", 400)
+
         try:
             # Get discounts from establishment_id
             discounts = Discount.objects.filter(establishment_id=establishment_id)
@@ -84,4 +103,40 @@ class MakePayment(APIView):
         except Exception as e:
             return generate_response("E00X", 400)
 
-        return generate_response({"msg": "Los pagos se han actualizado correctamente"}, "200")
+        return Response({"msg": "Los pagos se han actualizado correctamente"}, "200")
+
+
+def get_paypal_token(client_id, client_secret):
+    url = "https://api.sandbox.paypal.com/v1/oauth2/token"
+    data = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "grant_type": "client_credentials"
+    }
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Basic {0}".format(base64.b64encode((client_id + ":" + client_secret).encode()).decode())
+    }
+
+    token = requests.post(url, data, headers=headers)
+
+    if token.status_code != 200:
+        return generate_response("API001", 400)
+    else:
+        return Response({"token": json.loads(token.content)['access_token']}, 200)
+
+
+def paypal_api_call_order(order_id, token):
+    host = "https://api.sandbox.paypal.com/"
+    url = host + "v2/checkout/orders/" + str(order_id)
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+    }
+
+    orders = requests.get(url, headers=headers)
+
+    if orders.status_code != 200:
+        return generate_response("API002", 400)
+    else:
+        return Response({"status": json.loads(orders.content)['status']}, 200)
