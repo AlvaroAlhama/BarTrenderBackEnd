@@ -25,7 +25,7 @@ def get_commission(cost, scanned_num):
     elif cost >= 7.0:
         percentage = 0.05
 
-    return truncate(cost * scanned_num * percentage, 3)
+    return truncate(cost * scanned_num * percentage, 2)
 
 def validate_paypal_payment(order_id, create_time):
     
