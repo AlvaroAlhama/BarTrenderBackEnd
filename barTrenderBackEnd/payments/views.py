@@ -36,7 +36,9 @@ class CalculatePayment(APIView):
 
                 cost["payments"].append(
                     {
-                        "discount": payment.discount_id.id,
+                        "discount_id": payment.discount_id.id,
+                        "discount_name": payment.discount_id.name_text,
+                        "payment_scanned_codes:": payment.scanned_number,
                         "payment_date": str(payment.pay_date),
                         "value": to_pay
                     }
