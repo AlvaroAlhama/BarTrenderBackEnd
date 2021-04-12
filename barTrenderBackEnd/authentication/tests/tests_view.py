@@ -233,18 +233,15 @@ class AuthenticationViewTest(TestCase):
         self.assertTrue(new_count - prev_count == 0)
         self.assertTrue("A011" in str(resp.data["error"]))
 
-    def test_set_premium_ok(self):
+    def test_set_premium_bad_order_id(self):
         token = self.login(self.owner.user.username)
         request = self.factory.post("/authentication/setpremium")
         request.headers = {'token': token, 'Content-Type': 'application/json'}
-        request._body = json.dumps({})
+        request.data = {"order_id": "3443798955576811O", "create_time": "2021-04-12T17:14:05Z"}
 
         response = SetPremium.post(self, request)
 
-        new_owner = Owner.objects.filter(user=self.owner.user).get()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(new_owner.premium, True)
-        self.assertEqual(new_owner.premium_end_date, datetime.date.today() + relativedelta(months=+1))
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("API002" in str(response.data["error"]))
 
     #TODO Test try verificate payment
