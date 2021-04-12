@@ -89,10 +89,10 @@ class SetPremium(APIView):
         except:
             return generate_response("Z001", 400)
 
-        setpremium(request.headers['token'])
+        error_code = setpremium(request.headers['token'], request.data['order_id'], request.data['create_time'])
+        if error_code != None: return generate_response(error_code, 400)
         
         response = {
-            'body': body,
             'msg': 'Premium pagado'
         }
 
