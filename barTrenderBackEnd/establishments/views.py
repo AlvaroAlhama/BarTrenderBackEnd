@@ -10,6 +10,7 @@ import pytz
 import datetime
 from django.db.models import Q, F
 from barTrenderBackEnd.errors import generate_response
+from payments.models import Payment
 
 
 class Discounts(APIView):
@@ -53,9 +54,12 @@ class Discounts(APIView):
         totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
         endDate = datetime.datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
         #Generate the discount
-        Discount.objects.create(name_text=discount["name"], description_text=discount["description"], cost_number=discount["cost"], totalCodes_number=totalCodes,
+        discount = Discount.objects.create(name_text=discount["name"], description_text=discount["description"], cost_number=discount["cost"], totalCodes_number=totalCodes,
                                 scannedCodes_number=0, initial_date=datetime.datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid')), end_date=endDate, 
                                 establishment_id=Establishment.objects.get(id=establishment_id))
+
+        # Create Payment associated to
+        Payment.objects.create(pay_date=discount.initial_date + datetime.timedelta(days=30), scanned_number=0, discount_id=discount)
 
         return Response({"msg":"The discount has been created"}, 201)
 
@@ -107,7 +111,7 @@ class Discounts(APIView):
         #Delete discount
         discount.delete()
 
-        return Response({"msg":"The discount has been deleted"}, 200)
+        return Response({"msg": "The discount has been deleted"}, 200)
 
 
 class DiscountsQR(APIView):
@@ -173,6 +177,13 @@ class ScanDiscount(APIView):
 
         discount.update()
         discount.clients_id.add(client)
+
+        # Update Payment
+
+        payment = Payment.objects.get(discount_id=discount.id)
+
+        payment.scanned_number += 1
+        payment.save()
 
         return Response({"msg": "Success Scanning the QR. Discount applied!"}, "200")
 
