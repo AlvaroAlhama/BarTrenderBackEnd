@@ -226,13 +226,23 @@ def generate_qr(request, token, host, establishment_id, discount_id):
 def save_search(filters):
     date = datetime.datetime.now()
     for f in filters.keys():
-        if f != "discounts":
+        if f != "discounts" and f != "Zona":
             for t in filters[f]:
-                ranking = Ranking.objects.filter(search_date=date, filter_enum=f, type_text=t)
-                if ranking:
-                    ranking = ranking.get()
-                    ranking.value_number = ranking.value_number + 1
-                    ranking.save()
+                if "Zona" in filters.keys():
+                    for zone in filters["Zona"]:
+                        ranking = Ranking.objects.filter(search_date=date, filter_enum=f, type_text=t, zone_enum=zone)
+                        if ranking:
+                            ranking = ranking.get()
+                            ranking.value_number = ranking.value_number + 1
+                            ranking.save()
+                        else:
+                            Ranking.objects.create(search_date=date, filter_enum=f, type_text=t, value_number=1, zone_enum=zone)
                 else:
-                    Ranking.objects.create(search_date=date, filter_enum=f, type_text=t, value_number=1)
+                    ranking = Ranking.objects.filter(search_date=date, filter_enum=f, type_text=t, zone_enum=None)
+                    if ranking:
+                        ranking = ranking.get()
+                        ranking.value_number = ranking.value_number + 1
+                        ranking.save()
+                    else:
+                        Ranking.objects.create(search_date=date, filter_enum=f, type_text=t, value_number=1, zone_enum=None)
 
