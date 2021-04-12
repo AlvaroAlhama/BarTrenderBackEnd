@@ -1,0 +1,54 @@
+project:
+  name: 'BarTrender'
+  owner: 'cardobherUS'
+  teamId: '14'
+  identities:
+    heroku:
+      url: 'https://develop-backend-sprint-01.herokuapp.com/'
+    travis:
+      url: 'https://travis-ci.com/github/BarTrender/BarTrenderBack'
+  members:
+    member1:
+      name: 'Álvaro'
+      surname: 'Aguilar' 
+      githubUsername: 'AlvaroAlhama'
+    member2:
+      name: 'José Manuel'
+      surname: 'Cobo' 
+      githubUsername: 'CoboJose'
+    member3:
+      name: 'Carlos'
+      surname: 'Doblado' 
+      githubUsername: 'cardobherUS'
+    member4:
+      name: 'Alejandro'
+      surname: 'Fuentes' 
+      githubUsername: 'alefuegom'
+    member5:
+      name: 'José Manuel'
+      surname: 'González' 
+      githubUsername: 'josgonman'
+    member6:
+      name: 'Miguel Ángel'
+      surname: 'Moreno' 
+      githubUsername: 'MimiInTheEnd'
+    member7:
+      name: 'Víctor'
+      surname: 'Muñoz' 
+      githubUsername: 'vicmunramus'
+    member8:
+      name: 'Carlos'
+      surname: 'Pardo' 
+      githubUsername: 'CarlosPardo98'
+    member9:
+      name: 'Miguel'
+      surname: 'Ponce' 
+      githubUsername: 'miguelponce82'
+    member10:
+      name: 'Francisco José'
+      surname: 'Quintela' 
+      githubUsername: 'FranQuintela'
+    member11:
+      name: 'Enrique'
+      surname: 'Reina' 
+      githubUsername: 'enrreigut'
