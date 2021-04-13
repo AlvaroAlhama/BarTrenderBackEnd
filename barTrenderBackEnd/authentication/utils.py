@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import json, pytz, re, time, jwt
 import datetime
 from payments.utils import validate_paypal_payment
+from django.contrib.auth import authenticate
 
 HOURS = 24
 
@@ -82,14 +83,15 @@ def validateSignupData(body):
     if not re.match(r"[^@]+@[^@]+\.[^@]+", body["email"]):
         return "A015"
 
-    if not re.match(r"^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[@#$])[\w\d@#$]{8,}$", body["password"]):
-        return "A016"
+    if "password" in body:
+        if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&¡¿#¬\\(\\)])[A-Za-z\d@$!%*?&¡¿#¬\\(\\)]{8,}$", body["password"]):
+            return "A016"
     
-    if("phone" in body):
+    if "phone" in body:
         if not re.match(r"^\d{9}$", str(body["phone"])) or type(body["phone"]) != int:
             return "Z003"
 
-    if("birthday" in body):
+    if "birthday" in body:
         try: datetime.datetime.fromtimestamp(body["birthday"], pytz.timezone('Europe/Madrid'))
         except: return "Z002"
 
@@ -148,3 +150,34 @@ def isPremium(user, rol):
         return False
     
     return True
+
+def valid_user_update(user, data):
+
+    user = authenticate(username=user.username, password=data['old_password'])
+    if user is None:
+        return "A018"
+
+    try:
+        valid = validateSignupData(data)
+
+        if valid != None:
+            return valid
+
+    except:
+        return "E00X"
+
+    return None
+
+def valid_data_update(data, rol):
+    if 'email' not in data or 'old_password' not in data or 'name' not in data or 'surname' not in data:
+        return "Z001"
+
+    if rol == "client":
+        if "birthday" not in data:
+            return "Z001"
+
+    if rol == "owner":
+        if "phone" not in data:
+            return "Z001"
+
+    return None

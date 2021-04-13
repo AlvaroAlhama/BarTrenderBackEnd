@@ -97,3 +97,81 @@ class SetPremium(APIView):
         }
 
         return Response(response,200)
+
+class UserInformation(APIView):
+    @token_required('all')
+    def get(self, request):
+
+        user  = getUserFromToken(request.headers['token'])
+
+        rol = getRol(user)
+
+        if rol == 'client':
+            client = Client.objects.filter(user=user).get()
+            response = {
+                "email": user.username,
+                "name": user.first_name,
+                "surname": user.last_name,
+                "birthday": int(datetime.datetime.strptime(str(client.birthday), "%Y-%m-%d").timestamp())
+            }
+        else:
+            owner = Owner.objects.filter(user=user).get()
+            response = {
+                "email": user.username,
+                "name": user.first_name,
+                "surname": user.last_name,
+                "phone": owner.phone
+            }
+
+        return Response(response, 200)
+
+    @token_required('all')
+    def put(self, request):
+
+        user  = getUserFromToken(request.headers['token'])
+
+        rol = getRol(user)
+
+        valid = valid_data_update(request.data, rol)
+
+        if valid != None:
+            return generate_response(valid, 400)
+
+        valid = valid_user_update(user, request.data)
+
+        if valid != None:
+            return generate_response(valid, 400)
+
+        user.username = request.data['email']
+        if "password" in request.data:
+            user.set_password(request.data["password"])
+        user.first_name = request.data['name']
+        user.last_name = request.data['surname']
+        user.save()
+
+
+        if rol == 'client':
+            client = Client.objects.filter(user=user).get()
+            client.birthday = datetime.date.fromtimestamp(request.data['birthday'])
+            client.save()
+        else:
+            owner = Owner.objects.filter(user=user).get()
+            owner.phone = request.data['phone']
+            owner.save()
+
+        token, expiresIn = getToken(user, rol)
+
+        premium = isPremium(user, rol)
+
+        response = {
+            'token': token,
+            'expiresIn': expiresIn,
+            'rol': rol,
+            'premium': premium,
+            'msg': 'Se ha actualizado el usuario correctamente'
+        }
+
+        return Response(response, 200)
+
+
+        

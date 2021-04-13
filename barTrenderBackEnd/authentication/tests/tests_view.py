@@ -1,7 +1,7 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
 from authentication.models import Client, Owner
-from authentication.views import login, signup, SetPremium
+from authentication.views import login, signup, SetPremium, UserInformation
 from django.conf import settings
 from dateutil.relativedelta import relativedelta
 import datetime, pytz
@@ -232,3 +232,57 @@ class AuthenticationViewTest(TestCase):
         self.assertEqual(resp.status_code, 401)
         self.assertTrue(new_count - prev_count == 0)
         self.assertTrue("A011" in str(resp.data["error"]))
+
+    def test_get_user_ok(self):
+        token = self.login(self.client_user)
+        request = self.factory.post("/authentication/user")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        
+        resp = UserInformation.get(self, request)
+        
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.data['name'] == "")
+        self.assertTrue(resp.data['surname'] == "")
+        self.assertTrue(resp.data['email'] == "client@gmail.com")
+
+    def test_update_info_user_ok(self):
+        token = self.login(self.client_user)
+        request = self.factory.post("/authentication/user/edit")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        request.data = {"email":"client1@gmail.com", "old_password":"password", "name":"Nombre", "surname":"Apellido", "password":"Vekto1234$", "birthday":946681200}
+        
+        resp1 = UserInformation.put(self, request)
+
+        token = resp1.data['token']
+        request = self.factory.post("/authentication/user")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        
+        resp = UserInformation.get(self, request)
+        
+        self.assertEqual(resp1.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.data['name'] == "Nombre")
+        self.assertTrue(resp.data['surname'] == "Apellido")
+        self.assertTrue(resp.data['email'] == "client1@gmail.com")
+
+    def test_update_info_user_bad_birthday(self):
+        token = self.login(self.client_user)
+        request = self.factory.post("/authentication/user/edit")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        request.data = {"email":"client1@gmail.com", "old_password":"password", "name":"Nombre", "surname":"Apellido", "password":"Vekto1234$"}
+        
+        resp = UserInformation.put(self, request)
+        
+        self.assertEqual(resp.status_code, 400)
+        self.assertTrue("Z001" in str(resp.data["error"]))
+
+    def test_update_info_user_bad_phone(self):
+        token = self.login(self.client_user)
+        request = self.factory.post("/authentication/user/edit")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        request.data = {"email":"owner@gmail.com", "old_password":"password", "name":"Nombre", "surname":"Apellido", "password":"Vekto1234$"}
+        
+        resp = UserInformation.put(self, request)
+        
+        self.assertEqual(resp.status_code, 400)
+        self.assertTrue("Z001" in str(resp.data["error"]))
