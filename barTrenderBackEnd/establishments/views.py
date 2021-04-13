@@ -220,6 +220,10 @@ class Establishments(APIView):
         circle_filter = {} if not "Ambiente" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["Ambiente"], type="Ambiente")}
 
+        # Filter by name
+        name_filter = {} if not "name" in filters else {
+            'name_text__icontains': str(filters['name']).lower()}
+
         # Filter by Discount:
         # Get all the establishment that have discounts, filter the establishment by this ids
         discount_filter = ''
@@ -237,10 +241,10 @@ class Establishments(APIView):
         # Search establishments
         if discount_filter != '':
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(discount_filter).filter(verified_bool=True)    
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(**name_filter).filter(discount_filter).filter(verified_bool=True)    
         else:
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(verified_bool=True)
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(**name_filter).filter(verified_bool=True)
 
         establishments = establishments.distinct()
 
