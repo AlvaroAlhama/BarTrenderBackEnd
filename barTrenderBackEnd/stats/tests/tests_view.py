@@ -6,7 +6,7 @@ from django.conf import settings
 import json
 from stats.views import RankingStats, RankingStatsPremium
 from authentication.views import *
-from establishments.views import Establishments
+from establishments.views import *
 from stats.models import Ranking
 
 
@@ -39,9 +39,6 @@ class StatsViewTest(TestCase):
         resp = RankingStats.post(self, request)
 
         self.assertEqual(resp.status_code, 200)
-<<<<<<< HEAD
-=======
-
 
     def test_create_ranking_no_previous(self):
         request = self.factory.post("/establishments/get")
@@ -49,7 +46,7 @@ class StatsViewTest(TestCase):
         request.data = json.loads('{"filters": {"Bebida": ["Paulaner"]}}')
 
         previous_count = Ranking.objects.count()
-        resp = Establishments.post(self, request)
+        resp = FilterEstablishments.post(self, request)
         after_count = Ranking.objects.count()
 
         self.assertEqual(resp.status_code, 200)
@@ -61,10 +58,10 @@ class StatsViewTest(TestCase):
         request.data = json.loads('{"filters": {"Bebida": ["Paulaner"]}}')
 
         previous_count = Ranking.objects.count()
-        resp = Establishments.post(self, request)
+        resp = FilterEstablishments.post(self, request)
         after_count_1 = Ranking.objects.count()
 
-        resp = Establishments.post(self, request)
+        resp = FilterEstablishments.post(self, request)
         after_count_2 = Ranking.objects.count()
 
         ranking = Ranking.objects.filter(search_date=datetime.datetime.now(), filter_enum="Bebida", type_text="Paulaner").get()
@@ -73,6 +70,7 @@ class StatsViewTest(TestCase):
         self.assertEqual(after_count_1 - previous_count, 1)
         self.assertEqual(after_count_2 - after_count_1, 0)
         self.assertEqual(ranking.value_number, 2)
+
 
 class StatsPremiumViewTest(TestCase):
 
@@ -90,7 +88,6 @@ class StatsPremiumViewTest(TestCase):
         Ranking.objects.create(search_date=datetime.date.today(), filter_enum="Bebida", type_text="Cruzcampo", value_number=3, zone_enum="Remedios")
         Ranking.objects.create(search_date=datetime.date.today(), filter_enum="Bebida", type_text="Paulaner", value_number=2, zone_enum="Remedios")
         Ranking.objects.create(search_date=datetime.date.today() - datetime.timedelta(days=32), filter_enum="Bebida", type_text="Estrella del Sur", value_number=7, zone_enum="Remedios")
-        
 
     def login(self, username):
         api_call = "/authentication/login"
@@ -167,6 +164,3 @@ class StatsPremiumViewTest(TestCase):
         self.assertEqual(response.data['first']['name'], 'None')
         self.assertEqual(response.data['first']['real'], 0)
         self.assertEqual(response.data['first']['percentage'], 0.0)
-
-    
->>>>>>> origin/develop

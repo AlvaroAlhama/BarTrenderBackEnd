@@ -739,7 +739,7 @@ class EstablishmentViewTest(TestCase):
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"name": "Bar", "Bebida": ["Cruzcampo"], "Ocio": ["Billar"], "Zona": ["Alameda"], "Estilo": ["Arabe"], "discounts": false}}')
 
-        resp = Establishments.post(self, request)
+        resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
         self.assertEqual(resp.data[0]['phone'], 123456789)
@@ -815,7 +815,7 @@ class EstablishmentViewTest(TestCase):
         request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
         request.data = json.loads('{"filters": {"name": "Pub"}}')
 
-        resp = Establishments.post(self, request)
+        resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data), 0)
 
