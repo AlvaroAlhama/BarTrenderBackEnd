@@ -189,6 +189,57 @@ class ScanDiscount(APIView):
 
 
 class Establishments(APIView):
+    @token_required("owner")
+    def post(self, request):
+
+        try:
+            name_text = request.data['name_text']
+            cif_text = request.data['cif_text']
+            phone_number = request.data['phone_number']
+            zone_enum = request.data['zone_enum']
+            tags = request.data['tags']
+        except Exception as e:
+            return generate_response("Z001", 400)
+
+        tags_list = []
+        for tag in tags:
+            try:
+                tags_list.append(Tag.objects.get(name=tag))
+            except Exception as e:
+                return generate_response("E003", "400")
+
+        try:
+            desc_text = request.data['desc_text'].strip()
+        except Exception as e:
+            desc_text = None
+
+        establishment = Establishment(
+            name_text=name_text,
+            desc_text=desc_text,
+            cif_text=cif_text,
+            phone_number=phone_number,
+            zone_enum=zone_enum,
+            owner=get_owner(request)
+        )
+
+        try:
+            establishment.full_clean()
+        except ValidationError as e:
+            msg = []
+            for err in e.message_dict:
+                msg.append(e.message_dict[err])
+
+            error_msg = str(msg[0]).replace('[','').replace(']','').replace("'",'')
+            return Response({'error': 'V001: Error de validacion: ' + error_msg}, "400")
+
+        establishment.save()
+
+        establishment.tags.add(*tags_list)
+
+        return Response({"msg": "Success Creating Establishment"}, "200")
+
+
+class FilterEstablishments(APIView):
     @apikey_required
     def post(self, request):
 

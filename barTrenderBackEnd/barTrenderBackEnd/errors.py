@@ -20,6 +20,7 @@ errors = {
     'A017': 'El usuario que está logeado no es premium',
     'E001': 'Establecimiento no existe',
     'E002': 'El establecimiento no pertenece al dueño',
+    'E003': 'Las etiquetas indicadas no existen',
     'D001': 'Descuento no existe',
     'D002': 'Descuento no pertenece al establecimiento',
     'D003': 'El descuento ha expirado',
