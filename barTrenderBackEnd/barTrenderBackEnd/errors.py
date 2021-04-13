@@ -18,6 +18,7 @@ errors = {
     'A015': 'Email no valido',
     'A016': 'La contraseña debe contener 8 dígitos, y al menos una mayúscula, una minúscula, un número y un caracter especial',
     'A017': 'El usuario que está logeado no es premium',
+    'A018': 'Contraseña incorrecta',
     'E001': 'Establecimiento no existe',
     'E002': 'El establecimiento no pertenece al dueño',
     'D001': 'Descuento no existe',
