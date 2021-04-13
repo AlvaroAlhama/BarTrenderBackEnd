@@ -17,6 +17,7 @@ errors = {
     'A014': 'Un usuario con este teléfono ya existe',
     'A015': 'Email no valido',
     'A016': 'La contraseña debe contener 8 dígitos, y al menos una mayúscula, una minúscula, un número y un caracter especial',
+    'A017': 'El usuario que está logeado no es premium',
     'E001': 'Establecimiento no existe',
     'E002': 'El establecimiento no pertenece al dueño',
     'E003': 'Las etiquetas indicadas no existen',
@@ -39,9 +40,14 @@ errors = {
     'D021': 'El descuento aun no ha comenzado',
     'D022': 'Query invalida',
     'D023': 'Invalid Host',
+    'P001': 'El pago aun no ha sido efectuado en paypal. Verifiquelo.',
+    'P002': 'Las fechas del pago no coinciden. Sospechoso...',
     'Z001': 'Faltan campos obligatorios en el cuerpo de la petición',
     'Z002': 'Timestamp no valido',
     'Z003': 'Teléfono no válido',
+    'E00X': 'Ha ocurrido un error inesperado. Contacte con el administrador',
+    'API001': 'Error al obtener el token de auth de paypal',
+    'API002': 'Error con las orders de paypal. ¿Has puesto bien el ID?',
 }
 
 
