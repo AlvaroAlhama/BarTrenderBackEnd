@@ -27,6 +27,7 @@ def get_commission(cost, scanned_num):
 
     return truncate(cost * scanned_num * percentage, 2)
 
+
 def validate_paypal_payment(order_id, create_time):
     
     token = get_paypal_token(os.environ.get('PAYPAL_CLIENT_ID'), os.environ.get('PAYPAL_CLIENT_SECRET'))

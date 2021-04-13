@@ -151,6 +151,21 @@ def get_owner(request):
     return owner
 
 
+def get_owner_by_email(email):
+
+    try:
+        user = User.objects.get(username=email)
+    except Exception as e:
+        return None
+
+    try:
+        owner = Owner.objects.get(user=user)
+    except Exception as e:
+        return None
+
+    return owner
+
+
 def validate_establishment_owner(establishment_id, owner):
     try:
         Establishment.objects.get(id=establishment_id, owner=owner)

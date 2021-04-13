@@ -11,7 +11,7 @@ import datetime
 from django.db.models import Q, F
 from barTrenderBackEnd.errors import generate_response
 from payments.models import Payment
-
+import requests
 
 class Discounts(APIView):
     @apikey_required
@@ -189,6 +189,7 @@ class ScanDiscount(APIView):
 
 
 class Establishments(APIView):
+
     @token_required("owner")
     def post(self, request):
 
@@ -237,6 +238,92 @@ class Establishments(APIView):
         establishment.tags.add(*tags_list)
 
         return Response({"msg": "Success Creating Establishment"}, "200")
+
+    @token_required("owner")
+    def put(self, request, establishment_id):
+
+        valid = validate_establishment(establishment_id)
+        if valid is not None:
+            return valid
+
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None:
+            return valid
+
+        try:
+            name_text = request.data['name_text']
+            phone_number = request.data['phone_number']
+            zone_enum = request.data['zone_enum']
+            tags = request.data['tags']
+            desc_text = request.data['desc_text']
+        except Exception as e:
+            return generate_response("Z001", 400)
+
+        tags_list = []
+        for tag in tags:
+            try:
+                tags_list.append(Tag.objects.get(name=tag))
+            except Exception as e:
+                return generate_response("E003", "400")
+
+        establishment = Establishment.objects.get(id=establishment_id)
+
+        establishment.name_text = name_text
+        establishment.desc_text = desc_text
+        establishment.phone_number = phone_number
+        establishment.zone_enum = zone_enum
+
+        try:
+            establishment.full_clean()
+        except ValidationError as e:
+            msg = []
+            for err in e.message_dict:
+                msg.append(e.message_dict[err])
+
+            error_msg = str(msg[0]).replace('[', '').replace(']', '').replace("'", '')
+            return Response({'error': 'V001: Error de validacion: ' + error_msg}, "400")
+
+        establishment.tags.set(tags_list)
+
+        establishment.save()
+
+        return Response({"msg": "Success Updating Establishment"}, "200")
+
+    @token_required("owner")
+    def delete(self, request, establishment_id):
+
+        valid = validate_establishment(establishment_id)
+        if valid is not None:
+            return valid
+
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None:
+            return valid
+
+        http = "http"
+        if request.is_secure():
+            http = "https"
+
+        host = http + "://" + request.get_host()
+        url = host + "/v1/payments/establishments/" + str(establishment_id) + "/calculate"
+        headers = {
+            "token": request.headers["token"],
+        }
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            return generate_response("API003", 400)
+        else:
+            data = json.loads(response.content)
+
+        if data['total'] != 0:
+            return generate_response("E004", 400)
+
+        establishment = Establishment.objects.get(id=establishment_id)
+        establishment.delete()
+
+        return Response({"msg": "Success Deleting Establishment"}, "200")
 
 
 class FilterEstablishments(APIView):
