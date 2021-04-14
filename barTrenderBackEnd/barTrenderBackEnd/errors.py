@@ -22,6 +22,7 @@ errors = {
     'E001': 'Establecimiento no existe',
     'E002': 'El establecimiento no pertenece al dueño',
     'E003': 'Las etiquetas indicadas no existen',
+    'E004': 'Error al borrar el establecimiento. Tienes un/varios pago/s pendiente/s',
     'D001': 'Descuento no existe',
     'D002': 'Descuento no pertenece al establecimiento',
     'D003': 'El descuento ha expirado',
@@ -49,6 +50,7 @@ errors = {
     'E00X': 'Ha ocurrido un error inesperado. Contacte con el administrador',
     'API001': 'Error al obtener el token de auth de paypal',
     'API002': 'Error con las orders de paypal. ¿Has puesto bien el ID?',
+    'API003': 'Error con la API interna. Pruebe mas tarde',
 }
 
 
