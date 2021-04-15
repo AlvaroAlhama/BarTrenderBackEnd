@@ -199,6 +199,10 @@ class Establishments(APIView):
             phone_number = request.data['phone_number']
             zone_enum = request.data['zone_enum']
             tags = request.data['tags']
+            street_text = request.data['street_text']
+            number_text = request.data['number_text']
+            locality_text = request.data['locality_text']
+
         except Exception as e:
             return generate_response("Z001", 400)
 
@@ -214,24 +218,30 @@ class Establishments(APIView):
         except Exception as e:
             desc_text = None
 
+        try:
+            image_url = request.data['image_url'].strip()
+        except Exception as e:
+            image_url = None
+
         establishment = Establishment(
             name_text=name_text,
             desc_text=desc_text,
             cif_text=cif_text,
             phone_number=phone_number,
             zone_enum=zone_enum,
-            owner=get_owner(request)
+            owner=get_owner(request),
+            street_text=street_text,
+            number_text=number_text,
+            locality_text=locality_text,
+            image_url=image_url
         )
 
         try:
             establishment.full_clean()
         except ValidationError as e:
-            msg = []
-            for err in e.message_dict:
-                msg.append(e.message_dict[err])
-
-            error_msg = str(msg[0]).replace('[','').replace(']','').replace("'",'')
-            return Response({'error': 'V001: Error de validacion: ' + error_msg}, "400")
+            key = str(list(e.message_dict.keys())[0])
+            err_msg = e.message_dict[key][0]
+            return Response({'error': 'V001: Error de validacion: ' + err_msg + ' (' + key + ')'}, "400")
 
         establishment.save()
 
@@ -256,6 +266,10 @@ class Establishments(APIView):
             zone_enum = request.data['zone_enum']
             tags = request.data['tags']
             desc_text = request.data['desc_text']
+            street_text = request.data['street_text']
+            number_text = request.data['number_text']
+            locality_text = request.data['locality_text']
+            image_url = request.data['image_url']
         except Exception as e:
             return generate_response("Z001", 400)
 
@@ -272,6 +286,10 @@ class Establishments(APIView):
         establishment.desc_text = desc_text
         establishment.phone_number = phone_number
         establishment.zone_enum = zone_enum
+        establishment.street_text = street_text
+        establishment.number_text = number_text
+        establishment.locality_text = locality_text
+        establishment.image_url = image_url
 
         try:
             establishment.full_clean()
@@ -395,7 +413,11 @@ class FilterEstablishments(APIView):
                 'name': e.name_text,
                 'phone': e.phone_number,
                 'zone': e.zone_enum, 
-                'tags': tags
+                'street': e.street_text,
+                'number': e.number_text,
+                'locality': e.locality_text,
+                'image': e.image_url,
+                'tags': tags,
             })
             
         return Response(response, "200")
@@ -431,7 +453,11 @@ class Establishment_By_EstablishmentId(APIView):
                 'id': establishment.id,
                 'name': establishment.name_text,
                 'phone': establishment.phone_number,
-                'zone': establishment.zone_enum, 
+                'zone': establishment.zone_enum,
+                'street': establishment.street_text,
+                'number': establishment.number_text,
+                'locality': establishment.locality_text,
+                'image': establishment.image_url,
                 'tags': establishment.tags.all().values("name", "type")
             },
             "discounts": ds

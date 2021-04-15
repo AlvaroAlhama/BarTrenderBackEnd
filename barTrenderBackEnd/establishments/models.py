@@ -59,6 +59,10 @@ class Establishment(models.Model):
     premium_bool = models.BooleanField(default=False)
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
+    street_text = models.CharField(blank=False, null=False, max_length=50)
+    number_text = models.CharField(blank=False, null=False, max_length=5)
+    locality_text = models.CharField(blank=False, null=False, max_length=50)
+    image_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return "Establishment: " + self.name_text
