@@ -411,6 +411,8 @@ class FilterEstablishments(APIView):
             response.append({
                 'id': e.id,
                 'name': e.name_text,
+                'cif': e.cif_text,
+                'desc': e.desc_text,
                 'phone': e.phone_number,
                 'zone': e.zone_enum, 
                 'street': e.street_text,
@@ -452,6 +454,8 @@ class Establishment_By_EstablishmentId(APIView):
             "establishment": {
                 'id': establishment.id,
                 'name': establishment.name_text,
+                'cif': establishment.cif_text,
+                'desc': establishment.desc_text,
                 'phone': establishment.phone_number,
                 'zone': establishment.zone_enum,
                 'street': establishment.street_text,
