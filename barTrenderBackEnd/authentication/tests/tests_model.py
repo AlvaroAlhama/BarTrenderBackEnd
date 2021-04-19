@@ -1,6 +1,8 @@
 from django.test import TransactionTestCase
 from authentication.models import Owner, Client
 from django.contrib.auth.models import User
+import datetime
+import pytz
 
 class AuthenticationModelTest(TransactionTestCase):
 
@@ -8,13 +10,23 @@ class AuthenticationModelTest(TransactionTestCase):
         self.client_user = User.objects.create_user('client@gmail.com')
         self.owner_user = User.objects.create_user('owner@gmail.com')
 
-    def test_create_owner_ok(self):
+    def test_create_owner_ok_with_premium(self):
         prev_count = Owner.objects.all().count()
-        owner = Owner(user=self.owner_user, phone=955123456)
+        owner = Owner(user=self.owner_user, phone=955123456, premium=True, premium_end_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=30))
         owner.save()
         new_count = Owner.objects.all().count()
 
         self.assertTrue(new_count - prev_count == 1)
+
+    def test_create_owner_ok_without_premium(self):
+        prev_count = Owner.objects.all().count()
+        owner = Owner(user=self.owner_user, phone=955123456)
+        owner.save()
+        new_count = Owner.objects.all().count()
+        new_owner = Owner.objects.filter(user=self.owner_user).get()
+
+        self.assertTrue(new_count - prev_count == 1)
+        self.assertTrue(new_owner.premium == False)
 
     def test_create_owner_no_user(self):
         prev_count = Owner.objects.all().count()

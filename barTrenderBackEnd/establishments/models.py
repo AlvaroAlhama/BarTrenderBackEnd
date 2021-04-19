@@ -6,6 +6,7 @@ from .validators import *
 # ENUM
 
 class Type(models.TextChoices):
+    A = "Ambiente"
     B = "Bebida"
     E = "Estilo"
     I = "Instalacion"
@@ -39,6 +40,7 @@ class Tag(models.Model):
 
 class Establishment(models.Model):
     name_text = models.CharField(max_length=100, blank=False, null=False)
+    desc_text = models.CharField(max_length=200, blank=True, null=True)
     cif_text = models.CharField(max_length=9, blank=False, null=False, unique=True, validators=[
         RegexValidator(
             regex='^[a-zA-Z]{1}\d{7}[a-zA-Z0-9]{1}$',
@@ -54,8 +56,13 @@ class Establishment(models.Model):
     ])
     zone_enum = models.CharField(blank=False, null=False, max_length=25, choices=Zone.choices)
     verified_bool = models.BooleanField(default=False)
+    premium_bool = models.BooleanField(default=False)
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
+    street_text = models.CharField(blank=False, null=False, max_length=50)
+    number_text = models.CharField(blank=False, null=False, max_length=5)
+    locality_text = models.CharField(blank=False, null=False, max_length=50)
+    image_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return "Establishment: " + self.name_text
@@ -89,4 +96,3 @@ class Discount(models.Model):
 
     def __str__(self):
         return "Discount: " + self.name_text + "( Id Establecimiento: " + str(self.establishment_id.id) + ")"
-

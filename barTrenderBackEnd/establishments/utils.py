@@ -6,9 +6,9 @@ import time
 import io
 from authentication.utils import *
 from .models import *
+from stats.models import Ranking
 from django.utils import timezone
 from django.db.models import Q, F
-from datetime import datetime
 import math
 from barTrenderBackEnd.errors import generate_response
 
@@ -54,7 +54,7 @@ def validate_discount_update(discount, discount_id):
     
     discount_stored = Discount.objects.get(id=discount_id)
 
-    if datetime.timestamp(discount_stored.initial_date) > time.time():
+    if datetime.datetime.timestamp(discount_stored.initial_date) > time.time():
 
         if discount["cost"] < 0: return generate_response("D011", 400), None
 
@@ -69,7 +69,7 @@ def validate_discount_update(discount, discount_id):
         if "scannedCodes" in discount:
             if discount["scannedCodes"] < 0: return generate_response("D018", 400), None
 
-    elif not (datetime.timestamp(discount_stored.initial_date) > time.time() or (discount_stored.end_date != None and datetime.timestamp(discount_stored.end_date) < time.time())
+    elif not (datetime.datetime.timestamp(discount_stored.initial_date) > time.time() or (discount_stored.end_date != None and datetime.datetime.timestamp(discount_stored.end_date) < time.time())
     or (discount_stored.totalCodes_number != None and discount_stored.scannedCodes_number >= discount_stored.totalCodes_number)):
 
         if "totalCodes" in discount:
@@ -79,7 +79,7 @@ def validate_discount_update(discount, discount_id):
             if discount["endDate"] < discount["initialDate"] or discount['endDate'] < time.time(): return generate_response("D016", 400), None
 
         if (discount_stored.name_text != discount['name'] or discount_stored.description_text != discount['description']
-        or discount_stored.cost_number != discount['cost'] or datetime.timestamp(discount_stored.initial_date) != discount["initialDate"]
+        or discount_stored.cost_number != discount['cost'] or datetime.datetime.timestamp(discount_stored.initial_date) != discount["initialDate"]
         or discount_stored.scannedCodes_number != discount['scannedCodes']):
             return generate_response("D017", 400), None
 
@@ -93,7 +93,7 @@ def validate_discount_delete(discount_id):
 
     discount = Discount.objects.get(id=discount_id)
 
-    if datetime.timestamp(discount.initial_date) < time.time() and discount.scannedCodes_number > 0:
+    if datetime.datetime.timestamp(discount.initial_date) < time.time() and discount.scannedCodes_number > 0:
         return generate_response("D020", 400), None
 
     return None, discount
@@ -151,6 +151,21 @@ def get_owner(request):
     return owner
 
 
+def get_owner_by_email(email):
+
+    try:
+        user = User.objects.get(username=email)
+    except Exception as e:
+        return None
+
+    try:
+        owner = Owner.objects.get(user=user)
+    except Exception as e:
+        return None
+
+    return owner
+
+
 def validate_establishment_owner(establishment_id, owner):
     try:
         Establishment.objects.get(id=establishment_id, owner=owner)
@@ -187,7 +202,7 @@ def get_valid_discounts(establishment_id, all):
 def generate_qr(request, token, host, establishment_id, discount_id):
     # Client
 
-    if request.GET['custom_host'] is "":
+    if request.GET['custom_host'] == "":
         return generate_response("D023", '400')
 
     user = getUserFromToken(token)
@@ -222,3 +237,27 @@ def generate_qr(request, token, host, establishment_id, discount_id):
     img_byte_arr = img_byte_arr.getvalue()
 
     return img_byte_arr
+
+def save_search(filters):
+    date = datetime.datetime.now()
+    for f in filters.keys():
+        if f != "discounts" and f != "Zona":
+            for t in filters[f]:
+                if "Zona" in filters.keys():
+                    for zone in filters["Zona"]:
+                        ranking = Ranking.objects.filter(search_date=date, filter_enum=f, type_text=t, zone_enum=zone)
+                        if ranking:
+                            ranking = ranking.get()
+                            ranking.value_number = ranking.value_number + 1
+                            ranking.save()
+                        else:
+                            Ranking.objects.create(search_date=date, filter_enum=f, type_text=t, value_number=1, zone_enum=zone)
+                else:
+                    ranking = Ranking.objects.filter(search_date=date, filter_enum=f, type_text=t, zone_enum=None)
+                    if ranking:
+                        ranking = ranking.get()
+                        ranking.value_number = ranking.value_number + 1
+                        ranking.save()
+                    else:
+                        Ranking.objects.create(search_date=date, filter_enum=f, type_text=t, value_number=1, zone_enum=None)
+

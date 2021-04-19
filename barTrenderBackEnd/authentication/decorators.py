@@ -7,6 +7,9 @@ from authentication.utils import validateToken
 from rest_framework.response import Response
 from django.conf import settings
 from barTrenderBackEnd.errors import generate_response
+from .utils import getUserFromToken
+from establishments.models import Owner
+import datetime
 
 def apikey_required(view_func):
     def wrapped(self, request, **kwargs):
@@ -41,3 +44,28 @@ def token_required(rol):
 
         return wrapped
     return wrapper
+
+def premium_required(view_func):
+    def wrapped(self, request, **kwargs):
+        try:
+            token = request.headers["token"]
+        except:
+            return generate_response("A005", 401)
+
+        if token == None:
+            return generate_response("A005", 401)
+
+        user = getUserFromToken(token)
+        owner = Owner.objects.filter(user=user).get()
+
+        if not owner.premium:
+            return generate_response("A017", 401)
+
+        if owner.premium_end_date < datetime.date.today():
+            owner.premium = False
+            owner.save()
+            return generate_response("A017", 401)
+
+        return view_func(self, request, **kwargs)
+
+    return wrapped

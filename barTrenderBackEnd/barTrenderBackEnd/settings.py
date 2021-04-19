@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     'authentication',
     'establishments',
     'stats',
+    'payments',
 ]
 
 MODULES = [
     'authentication',
     'establishments',
     'stats',
+    'payments',
 ]
 
 MIDDLEWARE = [

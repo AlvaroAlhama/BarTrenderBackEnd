@@ -11,6 +11,8 @@ class Owner(models.Model):
             message='There have to be 9 numbers.'
         )
     ])
+    premium = models.BooleanField(default=False)
+    premium_end_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return "Owner: " + self.user.username
