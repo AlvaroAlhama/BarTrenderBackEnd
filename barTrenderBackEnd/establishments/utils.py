@@ -69,7 +69,7 @@ def validate_discount_update(discount, discount_id):
         if "scannedCodes" in discount:
             if discount["scannedCodes"] < 0: return generate_response("D018", 400), None
 
-    elif not (datetime.datetime.timestamp(discount_stored.initial_date) > time.time() or (discount_stored.end_date != None and datetime.timestamp(discount_stored.end_date) < time.time())
+    elif not (datetime.datetime.timestamp(discount_stored.initial_date) > time.time() or (discount_stored.end_date != None and datetime.datetime.timestamp(discount_stored.end_date) < time.time())
     or (discount_stored.totalCodes_number != None and discount_stored.scannedCodes_number >= discount_stored.totalCodes_number)):
 
         if "totalCodes" in discount:
