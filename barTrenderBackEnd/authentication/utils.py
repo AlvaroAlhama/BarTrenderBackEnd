@@ -84,7 +84,7 @@ def validateSignupData(body):
         return "A015"
 
     if "password" in body:
-        if not re.match(r"(?=.*[-!¡#$@*%¬&()¿?_])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}", body["password"]):
+        if not re.match(r"(?=.*[-!¡#$@*%º·¬ª'`´¨^=+&(){}.:;<>¿?_])(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}", body["password"]):
             return "A016"
     
     if "phone" in body:
