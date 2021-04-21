@@ -10,6 +10,8 @@ urlpatterns = [
     path('get_by_owner', EstablishmentsByOwner.as_view()),
     # Get Tags
     path('get_tags', Tags.as_view()),
+    # Get Zones
+    path('get_zones', Zones.as_view()),
     # Create Establishment
     path('create', Establishments.as_view()),
     # Update Establishment
