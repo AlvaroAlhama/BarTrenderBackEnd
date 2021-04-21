@@ -144,6 +144,9 @@ def isPremium(user, rol):
     if not owner.premium:
         return False
 
+    if owner.premium_end_date == None:
+        return False
+
     if owner.premium_end_date < datetime.date.today():
         owner.premium = False
         owner.save()

@@ -10,7 +10,7 @@ class RankingStats(APIView):
     @token_required("owner")
     def post(self, request):
 
-        query_filter = Q(search_date__lt=datetime.datetime.now(), search_date__gte=datetime.datetime.now()-datetime.timedelta(days=30)) & \
+        query_filter = Q(search_date__lt=datetime.datetime.now() + datetime.timedelta(days=1), search_date__gte=datetime.datetime.now()-datetime.timedelta(days=30)) & \
                       Q(filter_enum=request.data["filter"])
 
         all_rank = Ranking.objects.filter(query_filter).values('type_text').annotate(Sum('value_number')).\
@@ -48,7 +48,7 @@ class RankingStatsPremium(APIView):
     def post(self, request):
 
         try:
-            query_filter = Q(search_date__lt=datetime.date.fromtimestamp(request.data["end_date"]), search_date__gte=datetime.date.fromtimestamp(request.data["initial_date"])) & \
+            query_filter = Q(search_date__lt=datetime.date.fromtimestamp(request.data["end_date"]) + datetime.timedelta(days=1), search_date__gte=datetime.date.fromtimestamp(request.data["initial_date"])) & \
                         Q(filter_enum=request.data["filter"]) & Q(zone_enum=request.data["zone"])
         except:
             return generate_response('Z001', 400)

@@ -422,7 +422,7 @@ class FilterEstablishments(APIView):
                 'tags': tags,
             })
             
-        return Response(response, "200")
+        return Response(response, "200") 
 
 
 class Establishment_By_EstablishmentId(APIView):
@@ -503,3 +503,19 @@ class Tags(APIView):
      
         return Response(response, 200)
 
+class Zones(APIView):
+    def get(self,request):
+        response = {'zones': []}
+        try: qparam = request.GET['all']
+        except: qparam = "false"
+
+        if qparam == 'true':
+                zones = Zone.choices
+                for zone in zones:
+                    response['zones'].append(zone[0])
+        else:
+            zones = Establishment.objects.all().values('zone_enum').distinct()
+            for zone in zones:
+                response['zones'].append(zone['zone_enum'])
+        
+        return Response(response, 200)
