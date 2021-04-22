@@ -30,9 +30,18 @@ class Zone(models.TextChoices):
 
 # MODELS
 
+def tags_upload_to(instance, filename):
+    return '/'.join(['tags', str(instance.id), filename])
+
+
+def establishments_upload_to(instance, filename):
+    return '/'.join(['establishments', str(instance.id), filename])
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     type = models.CharField(blank=False, null=False, max_length=25, choices=Type.choices)
+    image = models.ImageField(upload_to=tags_upload_to, blank=True, null=True)
 
     def __str__(self):
         return "Tag: " + self.name + " Type: " + self.type
@@ -62,7 +71,7 @@ class Establishment(models.Model):
     street_text = models.CharField(blank=False, null=False, max_length=50)
     number_text = models.CharField(blank=False, null=False, max_length=5)
     locality_text = models.CharField(blank=False, null=False, max_length=50)
-    image_url = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to=establishments_upload_to, blank=True, null=True)
 
     def __str__(self):
         return "Establishment: " + self.name_text

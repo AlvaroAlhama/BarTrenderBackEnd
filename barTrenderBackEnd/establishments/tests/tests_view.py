@@ -631,9 +631,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_empty_correct(self):
@@ -643,9 +643,9 @@ class EstablishmentViewTest(TestCase):
         request.data = json.loads('{"filters": {}}')
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
         self.assertEqual(len(resp.data), 1)
 
@@ -674,9 +674,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_without_leisures_correct(self):
@@ -688,9 +688,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_without_zones_correct(self):
@@ -701,9 +701,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_without_discounts_correct(self):
@@ -714,9 +714,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_without_styles_correct(self):
@@ -728,9 +728,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_without_circles_correct(self):
@@ -741,9 +741,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_without_name_correct(self):
@@ -754,9 +754,9 @@ class EstablishmentViewTest(TestCase):
 
         resp = FilterEstablishments.post(self, request)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data[0]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data[0]['phone'], 123456789)
-        self.assertEqual(resp.data[0]['zone'], 'Alameda')
+        self.assertEqual(resp.data[0]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data[0]['phone_number'], 123456789)
+        self.assertEqual(resp.data[0]['zone_enum'], 'Alameda')
         self.assertEqual(len(resp.data[0]['tags']), 4)
 
     def test_filter_beers_not_match(self):
@@ -826,8 +826,8 @@ class EstablishmentViewTest(TestCase):
         url_data = { 'establishment_id': self.establisment1.id }
         resp = Establishment_By_EstablishmentId.get(self, request, **url_data)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.data["establishment"]['name'], 'Bar Ejemplo Uno')
-        self.assertEqual(resp.data["establishment"]['phone'], 123456789)
+        self.assertEqual(resp.data["establishment"]['name_text'], 'Bar Ejemplo Uno')
+        self.assertEqual(resp.data["establishment"]['phone_number'], 123456789)
         self.assertEqual(resp.data["discounts"][0]["name"], 'Descuento Uno')
     
     def test_get_establishment_by_establishment_id_bad_id(self):
