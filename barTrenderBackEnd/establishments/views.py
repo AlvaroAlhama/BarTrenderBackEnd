@@ -468,9 +468,9 @@ class Tags(APIView):
 
         zones = Establishment.objects.all().values('zone_enum').distinct()
 
-        response = serializer.data
+        response = {"tags": serializer.data}
         for zone in zones:
-            response.append({'name': zone['zone_enum'], 'type': 'Zona'})
+            response["tags"].append({'name': zone['zone_enum'], 'type': 'Zona'})
 
         return Response(response, 200)
 
