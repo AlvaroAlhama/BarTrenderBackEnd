@@ -219,9 +219,9 @@ class Establishments(APIView):
             desc_text = None
 
         try:
-            image_url = request.data['image_url'].strip()
+            image = request.data['image']
         except Exception as e:
-            image_url = None
+            image = None
 
         establishment = Establishment(
             name_text=name_text,
@@ -233,7 +233,7 @@ class Establishments(APIView):
             street_text=street_text,
             number_text=number_text,
             locality_text=locality_text,
-            image_url=image_url
+            image=image
         )
 
         try:
@@ -269,7 +269,7 @@ class Establishments(APIView):
             street_text = request.data['street_text']
             number_text = request.data['number_text']
             locality_text = request.data['locality_text']
-            image_url = request.data['image_url']
+            image = request.data['image']
         except Exception as e:
             return generate_response("Z001", 400)
 
@@ -289,7 +289,7 @@ class Establishments(APIView):
         establishment.street_text = street_text
         establishment.number_text = number_text
         establishment.locality_text = locality_text
-        establishment.image_url = image_url
+        establishment.image = image
 
         try:
             establishment.full_clean()
@@ -403,26 +403,9 @@ class FilterEstablishments(APIView):
                 **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(**name_filter).filter(verified_bool=True)
 
         establishments = establishments.distinct()
+        serializers = EstablishmentSerializer(establishments, many=True, context={"request": request})
 
-        response = []
-
-        for e in establishments:
-            tags = e.tags.all().values("name", "type")
-            response.append({
-                'id': e.id,
-                'name': e.name_text,
-                'cif': e.cif_text,
-                'desc': e.desc_text,
-                'phone': e.phone_number,
-                'zone': e.zone_enum, 
-                'street': e.street_text,
-                'number': e.number_text,
-                'locality': e.locality_text,
-                'image': e.image_url,
-                'tags': tags,
-            })
-            
-        return Response(response, "200") 
+        return Response(serializers.data, "200")
 
 
 class Establishment_By_EstablishmentId(APIView):
@@ -434,6 +417,8 @@ class Establishment_By_EstablishmentId(APIView):
         if valid is not None: return valid
 
         establishment = Establishment.objects.get(id=establishment_id)
+        serializer = EstablishmentSerializer(establishment, many=False, context={"request": request})
+
         discounts = Discount.objects.filter(establishment_id=establishment)
         
         ds = []
@@ -451,19 +436,7 @@ class Establishment_By_EstablishmentId(APIView):
             })
 
         response = {
-            "establishment": {
-                'id': establishment.id,
-                'name': establishment.name_text,
-                'cif': establishment.cif_text,
-                'desc': establishment.desc_text,
-                'phone': establishment.phone_number,
-                'zone': establishment.zone_enum,
-                'street': establishment.street_text,
-                'number': establishment.number_text,
-                'locality': establishment.locality_text,
-                'image': establishment.image_url,
-                'tags': establishment.tags.all().values("name", "type")
-            },
+            "establishment": serializer.data,
             "discounts": ds
         }
 
@@ -481,27 +454,26 @@ class EstablishmentsByOwner(APIView):
             return generate_response("A002", '404')
 
         establishments = Establishment.objects.filter(owner=owner.id)
-        serializer = EstablishmentSerializer(establishments, many=True)
+        serializer = EstablishmentSerializer(establishments, many=True, context={"request": request})
 
         return Response(serializer.data, 200)
+
 
 class Tags(APIView):
     @apikey_required
     def get(self, request):
 
-        tags = Tag.objects.all().values('name', 'type')
+        tags = Tag.objects.all()
+        serializer = TagsSerializer(tags, many=True, context={"request": request})
 
         zones = Establishment.objects.all().values('zone_enum').distinct()
 
-        response = {'tags': []}
-
-        for tag in tags:
-            response['tags'].append({'name': tag['name'], 'type': tag['type']})
-
+        response = serializer.data
         for zone in zones:
-            response['tags'].append({'name': zone['zone_enum'], 'type': 'Zona'})
-     
+            response.append({'name': zone['zone_enum'], 'type': 'Zona'})
+
         return Response(response, 200)
+
 
 class Zones(APIView):
     def get(self,request):
