@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'authentication',
     'establishments',
     'stats',
-    'payments',
+    'payments'
 ]
 
 MODULES = [
@@ -139,6 +139,9 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 }
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
