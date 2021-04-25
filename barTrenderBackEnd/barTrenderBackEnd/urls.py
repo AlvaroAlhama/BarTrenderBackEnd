@@ -10,7 +10,7 @@ urlpatterns = [
 
 for module in settings.MODULES:
     urlpatterns += [
-        path('v1/{}/'.format(module), include('{}.urls'.format(module)))
+        path('v1/{}/'.format(module), include('{}.urls'.format(module))),
     ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
