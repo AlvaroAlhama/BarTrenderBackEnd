@@ -10,3 +10,4 @@ gunicorn
 django-environ
 python-dateutil
 requests
+google-auth

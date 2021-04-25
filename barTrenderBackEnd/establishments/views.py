@@ -1,4 +1,6 @@
 from rest_framework.views import APIView
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import HttpResponse, HttpResponseRedirect
 from authentication.decorators import token_required, apikey_required
 from authentication.utils import *
@@ -11,12 +13,18 @@ import datetime
 from django.db.models import Q, F
 from barTrenderBackEnd.errors import generate_response
 from payments.models import Payment
+from django.core.files.uploadedfile import InMemoryUploadedFile
 import requests
+import json
+import base64
+import io
+from PIL import Image
+
 
 class Discounts(APIView):
     @apikey_required
     def get(self, request, establishment_id):
-        
+
         # globals params
 
         validations = validate_establishment(establishment_id)
@@ -41,64 +49,76 @@ class Discounts(APIView):
 
     @token_required("owner")
     def post(self, request, establishment_id):
-        #Validation
+        # Validation
         valid = validate_establishment_owner(establishment_id, get_owner(request))
         if valid is not None: return valid
 
-        try: discount = request.data
-        except: return generate_response("Z001", 400)
+        try:
+            discount = request.data
+        except:
+            return generate_response("Z001", 400)
 
         valid = validate_discount_request(discount)
         if valid is not None: return valid
 
         totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
-        endDate = datetime.datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
-        #Generate the discount
-        discount = Discount.objects.create(name_text=discount["name"], description_text=discount["description"], cost_number=discount["cost"], totalCodes_number=totalCodes,
-                                scannedCodes_number=0, initial_date=datetime.datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid')), end_date=endDate, 
-                                establishment_id=Establishment.objects.get(id=establishment_id))
+        endDate = datetime.datetime.fromtimestamp(discount["endDate"],
+                                                  pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
+        # Generate the discount
+        discount = Discount.objects.create(name_text=discount["name"], description_text=discount["description"],
+                                           cost_number=discount["cost"], totalCodes_number=totalCodes,
+                                           scannedCodes_number=0,
+                                           initial_date=datetime.datetime.fromtimestamp(discount["initialDate"],
+                                                                                        pytz.timezone('Europe/Madrid')),
+                                           end_date=endDate,
+                                           establishment_id=Establishment.objects.get(id=establishment_id))
 
         # Create Payment associated to
-        Payment.objects.create(pay_date=discount.initial_date + datetime.timedelta(days=30), scanned_number=0, discount_id=discount)
+        Payment.objects.create(pay_date=discount.initial_date + datetime.timedelta(days=30), scanned_number=0,
+                               discount_id=discount)
 
-        return Response({"msg":"The discount has been created"}, 201)
+        return Response({"msg": "The discount has been created"}, 201)
 
     @token_required("owner")
     def put(self, request, establishment_id, discount_id):
-        #Validation
+        # Validation
         valid = validate_establishment_owner(establishment_id, get_owner(request))
         if valid is not None: return valid
 
         valid = validate_discount(establishment_id, discount_id)
         if valid is not None: return valid
 
-        try: discount = request.data
-        except: return generate_response("Z001", 400)
+        try:
+            discount = request.data
+        except:
+            return generate_response("Z001", 400)
 
         valid, discount_stored = validate_discount_update(discount, discount_id)
         if valid is not None: return valid
 
         totalCodes = discount["totalCodes"] if "totalCodes" in discount else None
-        endDate = datetime.datetime.fromtimestamp(discount["endDate"], pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
+        endDate = datetime.datetime.fromtimestamp(discount["endDate"],
+                                                  pytz.timezone('Europe/Madrid')) if "endDate" in discount else None
         scannedCodes = discount["scannedCodes"] if "scannedCodes" in discount else 0
 
-        #Update the discount
+        # Update the discount
         discount_stored.name_text = discount["name"]
         discount_stored.description_text = discount["description"]
         discount_stored.cost_number = discount["cost"]
         discount_stored.totalCodes_number = totalCodes
         discount_stored.scannedCodes_number = scannedCodes
         if discount["initialDate"] > time.time():
-            discount_stored.initial_date = datetime.datetime.fromtimestamp(discount["initialDate"], pytz.timezone('Europe/Madrid'))
+            discount_stored.initial_date = datetime.datetime.fromtimestamp(discount["initialDate"],
+                                                                           pytz.timezone('Europe/Madrid'))
         discount_stored.end_date = endDate
         discount_stored.establishment_id = Establishment.objects.get(id=establishment_id)
         discount_stored.update()
 
-        return Response({"msg":"The discount has been updated"}, 200)
-    
+        return Response({"msg": "The discount has been updated"}, 200)
+
     @token_required("owner")
     def delete(self, request, establishment_id, discount_id):
-        #Validation
+        # Validation
         valid = validate_establishment_owner(establishment_id, get_owner(request))
         if valid is not None: return valid
 
@@ -108,7 +128,7 @@ class Discounts(APIView):
         valid, discount = validate_discount_delete(discount_id)
         if valid is not None: return valid
 
-        #Delete discount
+        # Delete discount
         discount.delete()
 
         return Response({"msg": "The discount has been deleted"}, 200)
@@ -191,7 +211,7 @@ class ScanDiscount(APIView):
 class Establishments(APIView):
 
     @token_required("owner")
-    def post(self, request):
+    def post(self, request, format=None):
 
         try:
             name_text = request.data['name_text']
@@ -219,9 +239,31 @@ class Establishments(APIView):
             desc_text = None
 
         try:
-            image_url = request.data['image_url'].strip()
+            image = request.data['image'].split(";base64,")[1]
+
+            try:
+                data = base64.b64decode(image.encode())
+
+                buf = io.BytesIO(data)
+                img = Image.open(buf)
+
+                img_io = io.BytesIO()
+                ext = request.data['image'].split(";base64,")[0].split("/")[1]
+                img.save(img_io, format=ext)
+
+                image = InMemoryUploadedFile(
+                    img_io,
+                    field_name=None,
+                    name=request.data["image_name"],
+                    content_type=request.data['image'].split(";base64,")[0],
+                    size=img_io.tell,
+                    charset=None)
+
+            except Exception as e:
+                return Response({"error": str(e)}, 400)
+
         except Exception as e:
-            image_url = None
+            image = None
 
         establishment = Establishment(
             name_text=name_text,
@@ -233,7 +275,7 @@ class Establishments(APIView):
             street_text=street_text,
             number_text=number_text,
             locality_text=locality_text,
-            image_url=image_url
+            image=image
         )
 
         try:
@@ -247,7 +289,7 @@ class Establishments(APIView):
 
         establishment.tags.add(*tags_list)
 
-        return Response({"msg": "Success Creating Establishment"}, "200")
+        return Response({"msg": "Se ha creado el establecimiento correctamente"}, "200")
 
     @token_required("owner")
     def put(self, request, establishment_id):
@@ -261,15 +303,14 @@ class Establishments(APIView):
             return valid
 
         try:
-            name_text = request.data['name_text']
-            phone_number = request.data['phone_number']
-            zone_enum = request.data['zone_enum']
-            tags = request.data['tags']
-            desc_text = request.data['desc_text']
-            street_text = request.data['street_text']
-            number_text = request.data['number_text']
-            locality_text = request.data['locality_text']
-            image_url = request.data['image_url']
+            name_text = request.data["name_text"]
+            phone_number = request.data["phone_number"]
+            zone_enum = request.data["zone_enum"]
+            tags = request.data["tags"].split(",")
+            desc_text = request.data["desc_text"]
+            street_text = request.data["street_text"]
+            number_text = request.data["number_text"]
+            locality_text = request.data["locality_text"]
         except Exception as e:
             return generate_response("Z001", 400)
 
@@ -289,7 +330,33 @@ class Establishments(APIView):
         establishment.street_text = street_text
         establishment.number_text = number_text
         establishment.locality_text = locality_text
-        establishment.image_url = image_url
+
+        try:
+            image = request.data['image'].split(";base64,")[1]
+
+            try:
+                data = base64.b64decode(image.encode())
+
+                buf = io.BytesIO(data)
+                img = Image.open(buf)
+
+                img_io = io.BytesIO()
+                ext = request.data['image'].split(";base64,")[0].split("/")[1]
+                img.save(img_io, format=ext)
+
+                establishment.image = InMemoryUploadedFile(
+                    img_io,
+                    field_name=None,
+                    name=request.data["image_name"],
+                    content_type=request.data['image'].split(";base64,")[0],
+                    size=img_io.tell,
+                    charset=None)
+
+            except Exception as e:
+                return Response({"error": str(e)}, 400)
+
+        except Exception as e:
+            image = None
 
         try:
             establishment.full_clean()
@@ -302,10 +369,9 @@ class Establishments(APIView):
             return Response({'error': 'V001: Error de validacion: ' + error_msg}, "400")
 
         establishment.tags.set(tags_list)
-
         establishment.save()
 
-        return Response({"msg": "Success Updating Establishment"}, "200")
+        return Response({"msg": "Se ha actualizado el establecimiento correctamente"}, "200")
 
     @token_required("owner")
     def delete(self, request, establishment_id):
@@ -341,7 +407,7 @@ class Establishments(APIView):
         establishment = Establishment.objects.get(id=establishment_id)
         establishment.delete()
 
-        return Response({"msg": "Success Deleting Establishment"}, "200")
+        return Response({"msg": "Se ha borrado el establecimiento correctamente"}, "200")
 
 
 class FilterEstablishments(APIView):
@@ -356,14 +422,14 @@ class FilterEstablishments(APIView):
 
         # save the search for statistics
         save_search(filters)
-        
+
         # Filter by zone if exist
         zone_filter = {} if not "Zona" in filters else {'zone_enum__in': filters["Zona"]}
 
         # Filter by beer
         beer_filter = {} if not "Bebida" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["Bebida"], type="Bebida")}
-        
+
         # Filter by leisure
         leisure_filter = {} if not "Ocio" in filters else {
             'tags__in': Tag.objects.filter(name__in=filters["Ocio"], type="Ocio")}
@@ -385,57 +451,49 @@ class FilterEstablishments(APIView):
         discount_filter = ''
         if "discounts" in filters:
             if filters["discounts"]:
-                discount_filter = (Q(discount__end_date__isnull=True, discount__initial_date__lt=timezone.now(), 
-                    discount__totalCodes_number__isnull=True) | Q(discount__end_date__isnull=True,
-                    discount__initial_date__lt=timezone.now(), discount__totalCodes_number__isnull=False, 
-                    discount__scannedCodes_number__lt=F('discount__totalCodes_number')) | Q(discount__end_date__isnull=False, 
-                    discount__end_date__gt=timezone.now(), discount__initial_date__lt=timezone.now(), discount__totalCodes_number__isnull=True) |
-                    Q(discount__end_date__isnull=False, discount__end_date__gt=timezone.now(), discount__initial_date__lt=timezone.now(), 
-                    discount__totalCodes_number__isnull=False, discount__scannedCodes_number__lt=F('discount__totalCodes_number')))
-        
+                discount_filter = (Q(discount__end_date__isnull=True, discount__initial_date__lt=timezone.now(),
+                                     discount__totalCodes_number__isnull=True) | Q(discount__end_date__isnull=True,
+                                                                                   discount__initial_date__lt=timezone.now(),
+                                                                                   discount__totalCodes_number__isnull=False,
+                                                                                   discount__scannedCodes_number__lt=F(
+                                                                                       'discount__totalCodes_number')) | Q(
+                    discount__end_date__isnull=False,
+                    discount__end_date__gt=timezone.now(), discount__initial_date__lt=timezone.now(),
+                    discount__totalCodes_number__isnull=True) |
+                                   Q(discount__end_date__isnull=False, discount__end_date__gt=timezone.now(),
+                                     discount__initial_date__lt=timezone.now(),
+                                     discount__totalCodes_number__isnull=False,
+                                     discount__scannedCodes_number__lt=F('discount__totalCodes_number')))
 
         # Search establishments
         if discount_filter != '':
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(**name_filter).filter(discount_filter).filter(verified_bool=True)    
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(
+                **circle_filter).filter(**name_filter).filter(discount_filter).filter(verified_bool=True)
         else:
             establishments = Establishment.objects.filter(
-                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(**circle_filter).filter(**name_filter).filter(verified_bool=True)
+                **zone_filter).filter(**beer_filter).filter(**leisure_filter).filter(**style_filter).filter(
+                **circle_filter).filter(**name_filter).filter(verified_bool=True)
 
         establishments = establishments.distinct()
+        serializers = EstablishmentSerializer(establishments, many=True, context={"request": request})
 
-        response = []
-
-        for e in establishments:
-            tags = e.tags.all().values("name", "type")
-            response.append({
-                'id': e.id,
-                'name': e.name_text,
-                'cif': e.cif_text,
-                'desc': e.desc_text,
-                'phone': e.phone_number,
-                'zone': e.zone_enum, 
-                'street': e.street_text,
-                'number': e.number_text,
-                'locality': e.locality_text,
-                'image': e.image_url,
-                'tags': tags,
-            })
-            
-        return Response(response, "200")
+        return Response(serializers.data, "200")
 
 
 class Establishment_By_EstablishmentId(APIView):
 
     @token_required('owner')
     def get(self, request, establishment_id):
-        
+
         valid = validate_establishment_owner(establishment_id, get_owner(request))
         if valid is not None: return valid
 
         establishment = Establishment.objects.get(id=establishment_id)
+        serializer = EstablishmentSerializer(establishment, many=False, context={"request": request})
+
         discounts = Discount.objects.filter(establishment_id=establishment)
-        
+
         ds = []
 
         for d in discounts:
@@ -451,19 +509,7 @@ class Establishment_By_EstablishmentId(APIView):
             })
 
         response = {
-            "establishment": {
-                'id': establishment.id,
-                'name': establishment.name_text,
-                'cif': establishment.cif_text,
-                'desc': establishment.desc_text,
-                'phone': establishment.phone_number,
-                'zone': establishment.zone_enum,
-                'street': establishment.street_text,
-                'number': establishment.number_text,
-                'locality': establishment.locality_text,
-                'image': establishment.image_url,
-                'tags': establishment.tags.all().values("name", "type")
-            },
+            "establishment": serializer.data,
             "discounts": ds
         }
 
@@ -481,25 +527,41 @@ class EstablishmentsByOwner(APIView):
             return generate_response("A002", '404')
 
         establishments = Establishment.objects.filter(owner=owner.id)
-        serializer = EstablishmentSerializer(establishments, many=True)
+        serializer = EstablishmentSerializer(establishments, many=True, context={"request": request})
 
         return Response(serializer.data, 200)
+
 
 class Tags(APIView):
     @apikey_required
     def get(self, request):
-
-        tags = Tag.objects.all().values('name', 'type')
+        tags = Tag.objects.all()
+        serializer = TagsSerializer(tags, many=True, context={"request": request})
 
         zones = Establishment.objects.all().values('zone_enum').distinct()
 
-        response = {'tags': []}
-
-        for tag in tags:
-            response['tags'].append({'name': tag['name'], 'type': tag['type']})
-
+        response = {"tags": serializer.data}
         for zone in zones:
-            response['tags'].append({'name': zone['zone_enum'], 'type': 'Zona'})
-     
+            response["tags"].append({'name': zone['zone_enum'], 'type': 'Zona'})
+
         return Response(response, 200)
 
+
+class Zones(APIView):
+    def get(self, request):
+        response = {'zones': []}
+        try:
+            qparam = request.GET['all']
+        except:
+            qparam = "false"
+
+        if qparam == 'true':
+            zones = Zone.choices
+            for zone in zones:
+                response['zones'].append(zone[0])
+        else:
+            zones = Establishment.objects.all().values('zone_enum').distinct()
+            for zone in zones:
+                response['zones'].append(zone['zone_enum'])
+
+        return Response(response, 200)

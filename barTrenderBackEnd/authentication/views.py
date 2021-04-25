@@ -8,6 +8,9 @@ from authentication.decorators import token_required, apikey_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from barTrenderBackEnd.errors import generate_response
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import os
 
 
 class login(APIView):
@@ -174,4 +177,113 @@ class UserInformation(APIView):
         return Response(response, 200)
 
 
-        
+class GoogleLogin(APIView):
+    @apikey_required
+    def post(self, request):
+
+        token = request.data["user"]["token"]
+        clientId = os.environ["GOOGLE_CLIENT_ID"]
+
+        try:
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), clientId)
+        except Exception as e:
+            return Response({"error": str(e)}, 400)
+
+        # Check Validity of token
+        if request.data["user"]["email"] == idinfo["email"] and idinfo["email_verified"]:
+
+            try:
+                user = User.objects.get(username=idinfo["email"])
+            except User.DoesNotExist:
+                user = None
+
+            if user is not None:
+
+                rol = getRol(user)
+
+                if rol is None:
+                    return generate_response("A010", 401)
+
+                # Generate the token with the correct claims
+                token, expiresIn = getToken(user, rol)
+
+                premium = isPremium(user, rol)
+
+                response = {
+                    'token': token,
+                    'expiresIn': expiresIn,
+                    'rol': rol,
+                    'premium': premium
+                }
+
+                return Response(response, 200)
+
+            else:
+
+                # Register user
+                if request.data["rol"] == "client":
+
+                    fake_body = {
+                        "email": idinfo["email"],
+                        "password": None,
+                        "birthday": request.data["user"]["birthday"],
+                        "rol": "client"
+                    }
+
+                    # Validate the data
+                    valid = validateSignupDataGoogle(fake_body)
+                    if valid is not None:
+                        return generate_response(valid, 401)
+
+                    user, err = createUser(fake_body)
+
+                    if err is not None:
+                        return generate_response(err, 400)
+
+                    # Generate the token
+                    token, expiresIn = getToken(user, fake_body["rol"])
+
+                    response = {
+                        'token': token,
+                        'expiresIn': expiresIn,
+                        'rol': fake_body["rol"],
+                        'email': fake_body["email"],
+                        'msg': 'Usuario creado correctamente',
+                        'premium': False
+                    }
+                    return Response(response, 200)
+
+                elif request.data["rol"] == "owner":
+
+                    fake_body = {
+                        "email": idinfo["email"],
+                        "password": None,
+                        "phone": request.data["user"]["phone"],
+                        "rol": "owner"
+                    }
+
+                    # Validate the data
+                    valid = validateSignupDataGoogle(fake_body)
+                    if valid is not None:
+                        return generate_response(valid, 401)
+
+                    user, err = createUser(fake_body)
+
+                    if err is not None:
+                        return generate_response(err, 400)
+
+                    # Generate the token
+                    token, expiresIn = getToken(user, fake_body["rol"])
+
+                    response = {
+                        'token': token,
+                        'expiresIn': expiresIn,
+                        'rol': fake_body["rol"],
+                        'email': fake_body["email"],
+                        'msg': 'Usuario creado correctamente',
+                        'premium': False
+                    }
+
+                    return Response(response, 200)
+
+        return generate_response("A019", 400)

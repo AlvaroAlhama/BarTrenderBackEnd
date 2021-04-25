@@ -4,6 +4,8 @@ from django.conf import settings
 from dateutil.relativedelta import relativedelta
 import json, pytz, re, time, jwt
 import datetime
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 from payments.utils import validate_paypal_payment
 from django.contrib.auth import authenticate
 
@@ -97,6 +99,29 @@ def validateSignupData(body):
 
     return None
 
+
+def validateSignupDataGoogle(body):
+
+    if "phone" in body:
+        if not re.match(r"^\d{9}$", str(body["phone"])) or type(body["phone"]) != int:
+            return "Z003"
+
+    if "birthday" in body:
+        try:
+            date1 = datetime.datetime.fromtimestamp(body["birthday"])
+            date2 = datetime.datetime.now()
+            difference_in_years = relativedelta(date2, date1).years
+
+            if difference_in_years < 18:
+                return "Z004"
+
+        except Exception as e:
+            return "Z002"
+
+
+    return None
+
+
 def createUser(body):
 
     try: user = User.objects.create_user(username=body["email"], password=body["password"])
@@ -142,6 +167,9 @@ def isPremium(user, rol):
     
     owner = Owner.objects.filter(user=user).get()
     if not owner.premium:
+        return False
+
+    if owner.premium_end_date == None:
         return False
 
     if owner.premium_end_date < datetime.date.today():
