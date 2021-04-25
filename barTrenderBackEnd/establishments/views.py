@@ -218,7 +218,7 @@ class Establishments(APIView):
             cif_text = request.data['cif_text']
             phone_number = request.data['phone_number']
             zone_enum = request.data['zone_enum']
-            tags = request.data['tags']
+            tags = request.data['tags'].split(',')
             street_text = request.data['street_text']
             number_text = request.data['number_text']
             locality_text = request.data['locality_text']
