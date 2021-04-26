@@ -19,6 +19,7 @@ import json
 import base64
 import io
 from PIL import Image
+from django.core.files.base import ContentFile
 
 
 class Discounts(APIView):
@@ -251,13 +252,7 @@ class Establishments(APIView):
                 ext = request.data['image'].split(";base64,")[0].split("/")[1]
                 img.save(img_io, format=ext)
 
-                image = InMemoryUploadedFile(
-                    img_io,
-                    field_name=None,
-                    name=request.data["image_name"],
-                    content_type=request.data['image'].split(";base64,")[0],
-                    size=img_io.tell,
-                    charset=None)
+                image = ContentFile(img_io.getvalue(), name=f"{request.data['image_name']}.{ext}")
 
             except Exception as e:
                 return Response({"error": str(e)}, 400)
@@ -344,13 +339,7 @@ class Establishments(APIView):
                 ext = request.data['image'].split(";base64,")[0].split("/")[1]
                 img.save(img_io, format=ext)
 
-                establishment.image = InMemoryUploadedFile(
-                    img_io,
-                    field_name=None,
-                    name=request.data["image_name"],
-                    content_type=request.data['image'].split(";base64,")[0],
-                    size=img_io.tell,
-                    charset=None)
+                establishment.image = ContentFile(img_io.getvalue(), name=f"{request.data['image_name']}.{ext}")
 
             except Exception as e:
                 return Response({"error": str(e)}, 400)

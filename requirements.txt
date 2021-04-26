@@ -11,3 +11,5 @@ django-environ
 python-dateutil
 requests
 google-auth
+cloudinary
+django-cloudinary-storage
