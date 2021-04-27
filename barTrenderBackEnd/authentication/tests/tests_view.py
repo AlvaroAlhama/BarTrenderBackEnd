@@ -1,7 +1,7 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
 from authentication.models import Client, Owner
-from authentication.views import login, signup, SetPremium, UserInformation
+from authentication.views import login, signup, SetPremium, IsPremium, UserInformation
 from django.conf import settings
 from dateutil.relativedelta import relativedelta
 import datetime, pytz
@@ -286,3 +286,23 @@ class AuthenticationViewTest(TestCase):
         
         self.assertEqual(resp.status_code, 400)
         self.assertTrue("Z001" in str(resp.data["error"]))
+
+    def test_isPremium_true(self):
+        token = self.login(self.owner_user_premium)
+        request = self.factory.post("/authentication/user/ispremium")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        
+        resp = IsPremium.get(self, request)
+        
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["isPremium"], True)
+
+    def test_isPremium_false(self):
+        token = self.login(self.owner_user)
+        request = self.factory.post("/authentication/user/ispremium")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        
+        resp = IsPremium.get(self, request)
+        
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["isPremium"], False)
