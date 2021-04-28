@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator
 from authentication.models import *
 from .validators import *
+from cloudinary.models import CloudinaryField
+
 
 # ENUM
 
@@ -41,6 +43,7 @@ def establishments_upload_to(instance, filename):
 class Tag(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     type = models.CharField(blank=False, null=False, max_length=25, choices=Type.choices)
+    photo_url = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to=tags_upload_to, blank=True, null=True)
 
     def __str__(self):
@@ -71,6 +74,7 @@ class Establishment(models.Model):
     street_text = models.CharField(blank=False, null=False, max_length=50)
     number_text = models.CharField(blank=False, null=False, max_length=5)
     locality_text = models.CharField(blank=False, null=False, max_length=50)
+    photo_url = models.URLField(blank=True, null=True)
     image = models.ImageField(upload_to=establishments_upload_to, blank=True, null=True)
 
     def __str__(self):
