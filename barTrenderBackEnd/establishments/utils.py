@@ -240,9 +240,13 @@ def generate_qr(request, token, host, establishment_id, discount_id):
 
 def save_search(filters):
     date = datetime.datetime.now()
+
+    print(filters.keys())
+
     for f in filters.keys():
-        if f != "discounts" and f != "Zona":
+        if f != "discounts" and f != "Zona" and f != "name":
             for t in filters[f]:
+
                 if "Zona" in filters.keys():
                     for zone in filters["Zona"]:
                         ranking = Ranking.objects.filter(search_date=date, filter_enum=f, type_text=t, zone_enum=zone)
