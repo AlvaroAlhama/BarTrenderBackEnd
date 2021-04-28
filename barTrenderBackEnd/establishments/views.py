@@ -360,6 +360,9 @@ class Establishments(APIView):
         establishment.tags.set(tags_list)
         establishment.save()
 
+        establishment.image_url = establishment.image.url
+        establishment.save()
+
         return Response({"msg": "Se ha actualizado el establecimiento correctamente"}, "200")
 
     @token_required("owner")
