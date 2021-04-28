@@ -282,6 +282,9 @@ class Establishments(APIView):
 
         establishment.save()
 
+        establishment.photo_url = establishment.image.url
+        establishment.save()
+
         establishment.tags.add(*tags_list)
 
         return Response({"msg": "Se ha creado el establecimiento correctamente"}, "200")
@@ -360,7 +363,7 @@ class Establishments(APIView):
         establishment.tags.set(tags_list)
         establishment.save()
 
-        establishment.image_url = establishment.image.url
+        establishment.photo_url = establishment.image.url
         establishment.save()
 
         return Response({"msg": "Se ha actualizado el establecimiento correctamente"}, "200")
