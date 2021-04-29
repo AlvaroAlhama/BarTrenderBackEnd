@@ -9,5 +9,6 @@ urlpatterns = [
     path('ispremium', IsPremium.as_view()),
     path('user', UserInformation.as_view()),
     path('user/edit', UserInformation.as_view()),
-    path('google', GoogleLogin.as_view())
+    path('google', GoogleLogin.as_view()),
+    path('method', AuthenticationMethod.as_view())
 ]

@@ -514,7 +514,6 @@ class Establishment_By_EstablishmentId(APIView):
 
 
 class EstablishmentsByOwner(APIView):
-
     @token_required("owner")
     def get(self, request):
 
@@ -527,6 +526,23 @@ class EstablishmentsByOwner(APIView):
         serializer = EstablishmentSerializer(establishments, many=True, context={"request": request})
 
         return Response(serializer.data, 200)
+
+class OwnerByEstablishment(APIView):
+    def get(self, request, establishment_id):
+        valid = validate_establishment(establishment_id)
+        if valid is not None:
+            return valid
+
+        establishment = Establishment.objects.filter(id=establishment_id).get()
+        owner = establishment.owner
+        owner_user = owner.user
+        
+        response = {
+            'ownerEmail': owner_user.username,
+            'method': authMethodOfUser(owner_user)
+        }
+
+        return Response(response, 200)
 
 
 class Tags(APIView):
