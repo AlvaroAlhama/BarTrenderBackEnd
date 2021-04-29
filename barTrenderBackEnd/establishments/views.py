@@ -282,7 +282,7 @@ class Establishments(APIView):
 
         establishment.save()
 
-        if establishment.image is not None:
+        if establishment.image.name:
             establishment.photo_url = establishment.image.url
             establishment.save()
 
@@ -364,7 +364,7 @@ class Establishments(APIView):
         establishment.tags.set(tags_list)
         establishment.save()
 
-        if establishment.image is not None:
+        if establishment.image.name:
             establishment.photo_url = establishment.image.url
             establishment.save()
 
