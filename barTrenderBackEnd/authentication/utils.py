@@ -209,3 +209,9 @@ def valid_data_update(data, rol):
             return "Z001"
 
     return None
+
+def authMethodOfUser(user):
+    method = 'google'
+    if user.has_usable_password():
+        method = 'password'
+    return method

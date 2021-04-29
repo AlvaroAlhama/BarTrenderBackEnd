@@ -867,6 +867,15 @@ class EstablishmentViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data['tags']), 6)
 
+    def test_owner_by_establishment(self):
+        request = self.factory.get("/<int:establishment_id>/1/get_owner")
+        url_data = { 'establishment_id': self.establisment1.id }
+        resp = OwnerByEstablishment.get(self, request, **url_data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data['ownerEmail'], "owner@gmail.com")
+        self.assertEqual(resp.data['method'], "password")
+
+
 
 class DiscountViewTest(TestCase):
     

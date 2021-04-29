@@ -8,6 +8,8 @@ urlpatterns = [
     path('<int:establishment_id>/get', Establishment_By_EstablishmentId.as_view()),
     # Get Establishments by logged owner since owner is fetched from token
     path('get_by_owner', EstablishmentsByOwner.as_view()),
+    # Get Owner By Establishment Id
+    path('<int:establishment_id>/get_owner', OwnerByEstablishment.as_view()),
     # Get Tags
     path('get_tags', Tags.as_view()),
     # Get Zones

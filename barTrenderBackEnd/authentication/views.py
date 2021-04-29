@@ -313,3 +313,9 @@ class GoogleLogin(APIView):
                     return Response(response, 200)
 
         return generate_response("A019", 400)
+
+class AuthenticationMethod(APIView):
+    @token_required('all')
+    def get(self, request):
+        user  = getUserFromToken(request.headers['token'])
+        return Response({'method': authMethodOfUser(user)}, 200)
