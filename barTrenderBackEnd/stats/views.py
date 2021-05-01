@@ -80,6 +80,5 @@ class RankingStatsPremium(APIView):
             else:
                 response["other"]["real"] = tail_cal_sum
                 response["other"]["percentage"] = float(tail_cal_sum) / max_val_sum * 100
-                
-        
+
         return Response(response, 200)

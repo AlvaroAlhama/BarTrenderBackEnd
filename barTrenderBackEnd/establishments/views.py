@@ -78,7 +78,7 @@ class Discounts(APIView):
         Payment.objects.create(pay_date=discount.initial_date + datetime.timedelta(days=30), scanned_number=0,
                                discount_id=discount)
 
-        return Response({"msg": "The discount has been created"}, 201)
+        return Response({"msg": "El descuento se ha creado correctamente"}, 201)
 
     @token_required("owner")
     def put(self, request, establishment_id, discount_id):
@@ -115,7 +115,7 @@ class Discounts(APIView):
         discount_stored.establishment_id = Establishment.objects.get(id=establishment_id)
         discount_stored.update()
 
-        return Response({"msg": "The discount has been updated"}, 200)
+        return Response({"msg": "El descuento se ha actualizado correctamente"}, 200)
 
     @token_required("owner")
     def delete(self, request, establishment_id, discount_id):
@@ -132,7 +132,7 @@ class Discounts(APIView):
         # Delete discount
         discount.delete()
 
-        return Response({"msg": "The discount has been deleted"}, 200)
+        return Response({"msg": "El descuento se ha borrado correctamente"}, 200)
 
 
 class DiscountsQR(APIView):
@@ -206,7 +206,7 @@ class ScanDiscount(APIView):
         payment.scanned_number += 1
         payment.save()
 
-        return Response({"msg": "Success Scanning the QR. Discount applied!"}, "200")
+        return Response({"msg": "Éxito al escanear el código QR. Descuento aplicado"}, "200")
 
 
 class Establishments(APIView):
