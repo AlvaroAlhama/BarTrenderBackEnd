@@ -412,7 +412,7 @@ class ScanQRViewTest(TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(prev_scanned_codes + 1, after_scanned_codes)
-        self.assertEqual(resp.data["msg"], "Success Scanning the QR. Discount applied!")
+        self.assertEqual(resp.data["msg"], "Éxito al escanear el código QR. Descuento aplicado")
 
     def test_invalid_scan_qr_owner_not_exist(self):
         token = self.login(self.owner_three.user.username)
@@ -973,7 +973,7 @@ class DiscountViewTest(TestCase):
 
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(prev_discounts + 1, after_discounts)
-        self.assertEqual(resp.data["msg"], "The discount has been created")
+        self.assertEqual(resp.data["msg"], "El descuento se ha creado correctamente")
 
     def test_create_discount_past_initial_date_past(self):
         token = self.login(self.owner_user.username)
@@ -1053,7 +1053,7 @@ class DiscountViewTest(TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(discount.totalCodes_number, 200)
-        self.assertEqual(resp.data["msg"], "The discount has been updated")
+        self.assertEqual(resp.data["msg"], "El descuento se ha actualizado correctamente")
 
     def test_update_discount_scanned_codes_below_total(self):
         token = self.login(self.owner_user.username)
@@ -1090,7 +1090,7 @@ class DiscountViewTest(TestCase):
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(prev_discounts-1, after_discounts)
-        self.assertEqual(resp.data["msg"], "The discount has been deleted")
+        self.assertEqual(resp.data["msg"], "El descuento se ha borrado correctamente")
 
     def test_delete_discount_scanned_codes_fail(self):
         token = self.login(self.owner_user.username)
