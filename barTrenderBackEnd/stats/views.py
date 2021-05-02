@@ -1,6 +1,7 @@
 from rest_framework.views import APIView, Response
 from authentication.decorators import token_required, apikey_required, premium_required
 from .models import *
+from establishments.models import *
 from django.db.models import Q, F
 import datetime
 from django.db.models import Sum
@@ -21,6 +22,7 @@ class RankingStats(APIView):
         for l in li:
             response[l] = {
                             "name": "None",
+                            "photo_url": "None",
                             "real": 0,
                             "percentage": 0,
                         }
@@ -34,6 +36,12 @@ class RankingStats(APIView):
         for i, data in enumerate(all_rank):
             if i < 3:
                 response[li[i]]["name"] = all_rank[i]["type_text"]
+
+                try:
+                    response[li[i]]["photo_url"] = Tag.objects.get(name=response[li[i]]["name"]).photo_url
+                except Exception as e:
+                    response[li[i]]["photo_url"] = "None"
+
                 response[li[i]]["real"] = int(all_rank[i]['value_number__sum'])
                 response[li[i]]["percentage"] = float(all_rank[i]['value_number__sum'])/max_val_sum * 100
             else:
@@ -61,6 +69,7 @@ class RankingStatsPremium(APIView):
         for l in li:
             response[l] = {
                             "name": "None",
+                            "photo_url": "None",
                             "real": 0,
                             "percentage": 0,
                         }
@@ -75,6 +84,12 @@ class RankingStatsPremium(APIView):
             
             if i < 10:
                 response[li[i]]["name"] = all_rank[i]["type_text"]
+
+                try:
+                    response[li[i]]["photo_url"] = Tag.objects.get(name=response[li[i]]["name"]).photo_url
+                except Exception as e:
+                    response[li[i]]["photo_url"] = "None"
+
                 response[li[i]]["real"] = int(all_rank[i]['value_number__sum'])
                 response[li[i]]["percentage"] = float(all_rank[i]['value_number__sum'])/max_val_sum * 100
             else:
