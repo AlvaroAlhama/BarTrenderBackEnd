@@ -8,6 +8,7 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from payments.utils import validate_paypal_payment
 from django.contrib.auth import authenticate
+from django.core.exceptions import ValidationError
 
 HOURS = 24
 
@@ -124,26 +125,48 @@ def validateSignupDataGoogle(body):
 
 def createUser(body):
 
-    try: user = User.objects.create_user(username=body["email"], password=body["password"])
-    except Exception as ex:
-        if(ex.args[0] == "UNIQUE constraint failed: auth_user.username"):
-            return None, "A013"
-        else:
-            return None, "A012"
+    user = User(username=body["email"])
+    user.set_password(body["password"])
+    try: user.full_clean()
+    except ValidationError as e:
+            key = str(list(e.message_dict.keys())[0])
+            err_msg = e.message_dict[key][0]
+            if "A user with that username already exists" in err_msg:
+                return None, "A013"
+            else:
+                return None, "E00X"
+    user.save()
 
     if body["rol"] == "owner":
-        try: Owner.objects.create(user=user, phone=body["phone"])
-        except Exception as ex:
-            print(ex.args[0])
-            if(ex.args[0] == "UNIQUE constraint failed: authentication_owner.phone"):
+        owner = Owner(user=user, phone=body["phone"])
+        try: owner.full_clean()
+        except ValidationError as e:
+            key = str(list(e.message_dict.keys())[0])
+            err_msg = e.message_dict[key][0]
+            user.delete()
+            if "Owner with this Phone already exists" in err_msg:
                 return None, "A014"
             else:
-                return None, "A012"
+                return None, "E00X"
+
+        owner.save()
+
     elif body["rol"] == "client":
-        try: Client.objects.create(user=user, birthday=datetime.datetime.fromtimestamp(body["birthday"], pytz.timezone('Europe/Madrid')))
-        except Exception as ex: 
-            print(ex)
-            return None, "A012"
+        client = Client(user=user, birthday=datetime.datetime.fromtimestamp(body["birthday"], pytz.timezone('Europe/Madrid')))
+        try: client.full_clean()
+        except ValidationError as e:
+            key = str(list(e.message_dict.keys())[0])
+            err_msg = e.message_dict[key][0]
+            user.delete()
+            print(err_msg)
+            if "client with this Phone already exists" in err_msg:
+                return None, "A014"
+            else:
+                return None, "E00X"
+
+        client.save()
+    else:
+        return None, "E00X"
 
     return user, None
 
