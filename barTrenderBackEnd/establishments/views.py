@@ -19,6 +19,7 @@ import json
 import base64
 import io
 from PIL import Image
+from django.core.files.base import ContentFile
 
 
 class Discounts(APIView):
@@ -77,7 +78,7 @@ class Discounts(APIView):
         Payment.objects.create(pay_date=discount.initial_date + datetime.timedelta(days=30), scanned_number=0,
                                discount_id=discount)
 
-        return Response({"msg": "The discount has been created"}, 201)
+        return Response({"msg": "El descuento se ha creado correctamente"}, 201)
 
     @token_required("owner")
     def put(self, request, establishment_id, discount_id):
@@ -114,7 +115,7 @@ class Discounts(APIView):
         discount_stored.establishment_id = Establishment.objects.get(id=establishment_id)
         discount_stored.update()
 
-        return Response({"msg": "The discount has been updated"}, 200)
+        return Response({"msg": "El descuento se ha actualizado correctamente"}, 200)
 
     @token_required("owner")
     def delete(self, request, establishment_id, discount_id):
@@ -131,7 +132,7 @@ class Discounts(APIView):
         # Delete discount
         discount.delete()
 
-        return Response({"msg": "The discount has been deleted"}, 200)
+        return Response({"msg": "El descuento se ha borrado correctamente"}, 200)
 
 
 class DiscountsQR(APIView):
@@ -205,7 +206,7 @@ class ScanDiscount(APIView):
         payment.scanned_number += 1
         payment.save()
 
-        return Response({"msg": "Success Scanning the QR. Discount applied!"}, "200")
+        return Response({"msg": "Éxito al escanear el código QR. Descuento aplicado"}, "200")
 
 
 class Establishments(APIView):
@@ -218,7 +219,7 @@ class Establishments(APIView):
             cif_text = request.data['cif_text']
             phone_number = request.data['phone_number']
             zone_enum = request.data['zone_enum']
-            tags = request.data['tags']
+            tags = request.data['tags'].split(',')
             street_text = request.data['street_text']
             number_text = request.data['number_text']
             locality_text = request.data['locality_text']
@@ -251,13 +252,7 @@ class Establishments(APIView):
                 ext = request.data['image'].split(";base64,")[0].split("/")[1]
                 img.save(img_io, format=ext)
 
-                image = InMemoryUploadedFile(
-                    img_io,
-                    field_name=None,
-                    name=request.data["image_name"],
-                    content_type=request.data['image'].split(";base64,")[0],
-                    size=img_io.tell,
-                    charset=None)
+                image = ContentFile(img_io.getvalue(), name=f"{request.data['image_name']}.{ext}")
 
             except Exception as e:
                 return Response({"error": str(e)}, 400)
@@ -286,6 +281,10 @@ class Establishments(APIView):
             return Response({'error': 'V001: Error de validacion: ' + err_msg + ' (' + key + ')'}, "400")
 
         establishment.save()
+
+        if establishment.image.name:
+            establishment.photo_url = establishment.image.url
+            establishment.save()
 
         establishment.tags.add(*tags_list)
 
@@ -344,13 +343,7 @@ class Establishments(APIView):
                 ext = request.data['image'].split(";base64,")[0].split("/")[1]
                 img.save(img_io, format=ext)
 
-                establishment.image = InMemoryUploadedFile(
-                    img_io,
-                    field_name=None,
-                    name=request.data["image_name"],
-                    content_type=request.data['image'].split(";base64,")[0],
-                    size=img_io.tell,
-                    charset=None)
+                establishment.image = ContentFile(img_io.getvalue(), name=f"{request.data['image_name']}.{ext}")
 
             except Exception as e:
                 return Response({"error": str(e)}, 400)
@@ -370,6 +363,10 @@ class Establishments(APIView):
 
         establishment.tags.set(tags_list)
         establishment.save()
+
+        if establishment.image.name:
+            establishment.photo_url = establishment.image.url
+            establishment.save()
 
         return Response({"msg": "Se ha actualizado el establecimiento correctamente"}, "200")
 
@@ -517,7 +514,6 @@ class Establishment_By_EstablishmentId(APIView):
 
 
 class EstablishmentsByOwner(APIView):
-
     @token_required("owner")
     def get(self, request):
 
@@ -530,6 +526,23 @@ class EstablishmentsByOwner(APIView):
         serializer = EstablishmentSerializer(establishments, many=True, context={"request": request})
 
         return Response(serializer.data, 200)
+
+class OwnerByEstablishment(APIView):
+    def get(self, request, establishment_id):
+        valid = validate_establishment(establishment_id)
+        if valid is not None:
+            return valid
+
+        establishment = Establishment.objects.filter(id=establishment_id).get()
+        owner = establishment.owner
+        owner_user = owner.user
+        
+        response = {
+            'ownerEmail': owner_user.username,
+            'method': authMethodOfUser(owner_user)
+        }
+
+        return Response(response, 200)
 
 
 class Tags(APIView):

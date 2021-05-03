@@ -4,7 +4,9 @@
     "pk": 1,
     "fields": {
       "name": "Dardos",
-      "type": "Ocio"
+      "type": "Ocio",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/1/dardos_qia9fk",
+      "image": "media/tags/1/dardos_qia9fk"
     }
   },
   {
@@ -12,7 +14,9 @@
     "pk": 2,
     "fields": {
       "name": "Billar",
-      "type": "Ocio"
+      "type": "Ocio",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/2/billar_v8im3e",
+      "image": "media/tags/2/billar_v8im3e"
     }
   },
   {
@@ -20,7 +24,9 @@
     "pk": 3,
     "fields": {
       "name": "Paulaner",
-      "type": "Bebida"
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/3/paulaner_aqxahy",
+      "image": "media/tags/3/paulaner_aqxahy"
     }
   },
   {
@@ -28,7 +34,9 @@
     "pk": 4,
     "fields": {
       "name": "Cruzcampo",
-      "type": "Bebida"
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/4/cruzcampo_d5tjn1",
+      "image": "media/tags/4/cruzcampo_d5tjn1"
     }
   },
   {
@@ -36,15 +44,209 @@
     "pk": 5,
     "fields": {
       "name": "Futbolin",
-      "type": "Ocio"
+      "type": "Ocio",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/5/futbolin_kyibca",
+      "image": "media/tags/5/futbolin_kyibca"
     }
   },
   {
     "model": "establishments.tag",
-    "pk": 6,
+    "pk": 7,
     "fields": {
-      "name": "Terrraza",
-      "type": "Instalacion"
+      "name": "Mahou",
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/7/mahou_kozisl",
+      "image": "media/tags/7/mahou_kozisl"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 8,
+    "fields": {
+      "name": "San Miguel",
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/8/sanmiguel_hwl7ei",
+      "image": "media/tags/8/sanmiguel_hwl7ei"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 9,
+    "fields": {
+      "name": "Heineken",
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/9/heineken_dg37da",
+      "image": "media/tags/9/heineken_dg37da"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 10,
+    "fields": {
+      "name": "Voll-Damm",
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/10/volldamm_rmpk6v",
+      "image": "media/tags/10/volldamm_rmpk6v"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 11,
+    "fields": {
+      "name": "Estrella Galicia",
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/11/estrellaGalicia_yml0eo",
+      "image": "media/tags/11/estrellaGalicia_yml0eo"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 12,
+    "fields": {
+      "name": "Foster",
+      "type": "Bebida",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/12/foster_hbbcza",
+      "image": "media/tags/12/foster_hbbcza"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 13,
+    "fields": {
+      "name": "Pinball",
+      "type": "Ocio",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/13/pinball_wggjbj",
+      "image": "media/tags/13/pinball_wggjbj"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 14,
+    "fields": {
+      "name": "Zona Gaming",
+      "type": "Ocio",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/14/gameZone_gur2lb",
+      "image": "media/tags/14/gameZone_gur2lb"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 15,
+    "fields": {
+      "name": "Arcade",
+      "type": "Ocio",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/15/recreativas_rit11n",
+      "image": "media/tags/15/recreativas_rit11n"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 16,
+    "fields": {
+      "name": "Cafeteria",
+      "type": "Estilo",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/16/cafeteria_ogsxjn",
+      "image": "media/tags/16/cafeteria_ogsxjn"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 17,
+    "fields": {
+      "name": "Gaming",
+      "type": "Estilo",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/17/gaming_dtxor0",
+      "image": "media/tags/17/gaming_dtxor0"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 18,
+    "fields": {
+      "name": "Pub",
+      "type": "Estilo",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/18/pub_iihe7k",
+      "image": "media/tags/18/pub_iihe7k"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 19,
+    "fields": {
+      "name": "Teteria",
+      "type": "Estilo",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/19/teteria_ql1yyn",
+      "image": "media/tags/19/teteria_ql1yyn"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 20,
+    "fields": {
+      "name": "Tradicional",
+      "type": "Estilo",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/20/tradicional_qhtmis",
+      "image": "media/tags/20/tradicional_qhtmis"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 21,
+    "fields": {
+      "name": "Familiar",
+      "type": "Ambiente",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/21/familiar_mc7osj",
+      "image": "media/tags/21/familiar_mc7osj"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 22,
+    "fields": {
+      "name": "Festivo",
+      "type": "Ambiente",
+      "photo_url": "http://localhost:8000/admin/establishments/tag/22/change/",
+      "image": "media/tags/22/festivo_t5tfad"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 23,
+    "fields": {
+      "name": "Joven",
+      "type": "Ambiente",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/23/joven_sxwxmm",
+      "image": "media/tags/23/joven_sxwxmm"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 24,
+    "fields": {
+      "name": "Senior",
+      "type": "Ambiente",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/24/maduro_h44jbf",
+      "image": "media/tags/24/maduro_h44jbf"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 25,
+    "fields": {
+      "name": "Terraza",
+      "type": "Estilo",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/25/terraza_v2uy9e",
+      "image": "media/tags/25/terraza_v2uy9e"
+    }
+  },
+  {
+    "model": "establishments.tag",
+    "pk": 26,
+    "fields": {
+      "name": "Cachimba",
+      "type": "Ocio",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/tags/26/cachimba_iezox9",
+      "image": "media/tags/26/cachimba_iezox9"
     }
   },
   {
@@ -59,9 +261,11 @@
       "verified_bool": true,
       "premium_bool": false,
       "owner": 2,
-      "street_text": "Calle Adon y  Eva",
+      "street_text": "Calle Adan y  Eva",
       "number_text": "3",
       "locality_text": "Lebrija",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/1/teteriaAndauni_wennga",
+      "image": "media/establishments/1/teteriaAndauni_wennga",
       "tags": [
         3,
         4,
@@ -78,17 +282,18 @@
       "cif_text": "B52820586",
       "phone_number": 222222222,
       "zone_enum": "Exterior",
-      "verified_bool": false,
+      "verified_bool": true,
       "premium_bool": false,
       "owner": 3,
       "street_text": "Calle Real",
       "number_text": "7",
       "locality_text": "Castilleja de la Cuesta",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/2/lepoque_yrqazl",
+      "image": "media/establishments/2/lepoque_yrqazl",
       "tags": [
         3,
         4,
-        5,
-        6
+        5
       ]
     }
   },
@@ -101,16 +306,17 @@
       "cif_text": "G72047939",
       "phone_number": 333333333,
       "zone_enum": "Exterior",
-      "verified_bool": false,
+      "verified_bool": true,
       "premium_bool": false,
       "owner": 4,
       "street_text": "Calle Gerona",
       "number_text": "40",
       "locality_text": "Sevilla",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/3/rinconcillo_ot3ame",
+      "image": "media/establishments/3/rinconcillo_ot3ame",
       "tags": [
         1,
-        2,
-        6
+        2
       ]
     }
   },
@@ -123,15 +329,16 @@
       "cif_text": "A72083942",
       "phone_number": 444444444,
       "zone_enum": "Cartuja",
-      "verified_bool": false,
+      "verified_bool": true,
       "premium_bool": false,
       "owner": 5,
       "street_text": "Avenida de la Reina Mercedes",
       "number_text": "21",
       "locality_text": "Sevilla",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/4/laReina_evjgi4",
+      "image": "media/establishments/4/laReina_evjgi4",
       "tags": [
-        4,
-        6
+        4
       ]
     }
   },
@@ -144,19 +351,20 @@
       "cif_text": "B52068848",
       "phone_number": 555555555,
       "zone_enum": "Cartuja",
-      "verified_bool": false,
+      "verified_bool": true,
       "premium_bool": false,
       "owner": 6,
       "street_text": "Calle Periodista Ramon Resa",
       "number_text": "8",
       "locality_text": "Sevilla",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/5/gamersZone_qpouev",
+      "image": "media/establishments/5/gamersZone_qpouev",
       "tags": [
         1,
         2,
         3,
         4,
-        5,
-        6
+        5
       ]
     }
   },
@@ -175,11 +383,12 @@
       "street_text": "C/ Monzon",
       "number_text": "8",
       "locality_text": "Sevilla",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/6/elAljibe_vn3asi",
+      "image": "media/establishments/6/elAljibe_vn3asi",
       "tags": [
         1,
         3,
-        4,
-        6
+        4
       ]
     }
   },
@@ -192,16 +401,17 @@
       "cif_text": "A41450016",
       "phone_number": 777777777,
       "zone_enum": "Sevilla Este",
-      "verified_bool": false,
+      "verified_bool": true,
       "premium_bool": false,
       "owner": 8,
       "street_text": "Avenida de la Reina Mercedes",
       "number_text": "61",
       "locality_text": "Sevilla",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/7/combarro_ydsgsi",
+      "image": "media/establishments/7/combarro_ydsgsi",
       "tags": [
         3,
-        4,
-        6
+        4
       ]
     }
   },
@@ -220,13 +430,14 @@
       "street_text": "Calle Guadiana",
       "number_text": "29",
       "locality_text": "Sevilla",
+      "photo_url": "https://res.cloudinary.com/dyurjxohb/image/upload/v1/media/establishments/8/barGuadiana_jgh6lx",
+      "image": "media/establishments/8/barGuadiana_jgh6lx",
       "tags": [
         1,
         2,
         3,
         4,
-        5,
-        6
+        5
       ]
     }
   },

@@ -101,6 +101,32 @@ class SetPremium(APIView):
 
         return Response(response,200)
 
+class IsPremium(APIView):
+    @token_required('owner')
+    def get(self, request):
+        user = getUserFromToken(request.headers['token'])
+        owner = Owner.objects.get(user=user)
+
+        premiumUntil = None
+        premiumRemainingDays = None
+        
+        if owner.premium and owner.premium_end_date < datetime.date.today():
+            owner.premium = False
+            owner.save()
+
+        if owner.premium:
+            premiumUntil = int(time.mktime(datetime.datetime.strptime(str(owner.premium_end_date), "%Y-%m-%d").timetuple()))
+            premiumRemainingDays = (owner.premium_end_date - datetime.date.today()).days
+
+        
+        response = {
+                "isPremium": owner.premium,
+                "premiumUntil": premiumUntil,
+                "premiumRemainingDays": premiumRemainingDays,
+        }
+
+        return Response(response, 200)
+
 class UserInformation(APIView):
     @token_required('all')
     def get(self, request):
@@ -287,3 +313,9 @@ class GoogleLogin(APIView):
                     return Response(response, 200)
 
         return generate_response("A019", 400)
+
+class AuthenticationMethod(APIView):
+    @token_required('all')
+    def get(self, request):
+        user  = getUserFromToken(request.headers['token'])
+        return Response({'method': authMethodOfUser(user)}, 200)

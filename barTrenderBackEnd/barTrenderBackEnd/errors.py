@@ -42,7 +42,7 @@ errors = {
     'D020': 'No se puede eliminar un descuento que haya comenzado y tenga códigos escaneados',
     'D021': 'El descuento aun no ha comenzado',
     'D022': 'Query invalida',
-    'D023': 'Invalid Host',
+    'D023': 'Host inválido',
     'P001': 'El pago aun no ha sido efectuado en paypal. Verifiquelo.',
     'P002': 'Las fechas del pago no coinciden. Sospechoso...',
     'Z001': 'Faltan campos obligatorios en el cuerpo de la petición',

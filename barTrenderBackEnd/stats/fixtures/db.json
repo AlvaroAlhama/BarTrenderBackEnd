@@ -1,0 +1,552 @@
+[
+  {
+    "model": "stats.ranking",
+    "pk": 1,
+    "fields": {
+      "search_date": "2021-04-29",
+      "filter_enum": "Bebida",
+      "type_text": "Cruzcampo",
+      "value_number": 10,
+      "zone_enum": "Bellavista"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 2,
+    "fields": {
+      "search_date": "2021-04-20",
+      "filter_enum": "Ocio",
+      "type_text": "Dardos",
+      "value_number": 20,
+      "zone_enum": "Triana"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 3,
+    "fields": {
+      "search_date": "2021-04-27",
+      "filter_enum": "Ocio",
+      "type_text": "Dardos",
+      "value_number": 30,
+      "zone_enum": "Cartuja"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 4,
+    "fields": {
+      "search_date": "2021-04-24",
+      "filter_enum": "Ocio",
+      "type_text": "Billar",
+      "value_number": 50,
+      "zone_enum": "Bellavista"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 5,
+    "fields": {
+      "search_date": "2021-04-26",
+      "filter_enum": "Ocio",
+      "type_text": "Billar",
+      "value_number": 23,
+      "zone_enum": "Exterior"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 6,
+    "fields": {
+      "search_date": "2021-04-27",
+      "filter_enum": "Bebida",
+      "type_text": "Paulaner",
+      "value_number": 100,
+      "zone_enum": "Nervion"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 7,
+    "fields": {
+      "search_date": "2021-04-29",
+      "filter_enum": "Bebida",
+      "type_text": "Paulaner",
+      "value_number": 80,
+      "zone_enum": "Cartuja"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 8,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Bebida",
+      "type_text": "Cruzcampo",
+      "value_number": 257,
+      "zone_enum": "San Bernardo"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 9,
+    "fields": {
+      "search_date": "2021-04-28",
+      "filter_enum": "Ocio",
+      "type_text": "Futbolin",
+      "value_number": 60,
+      "zone_enum": "Macarena"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 10,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Ocio",
+      "type_text": "Futbolin",
+      "value_number": 80,
+      "zone_enum": "Bellavista"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 11,
+    "fields": {
+      "search_date": "2021-04-28",
+      "filter_enum": "Bebida",
+      "type_text": "Mahou",
+      "value_number": 50,
+      "zone_enum": "Remedios"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 12,
+    "fields": {
+      "search_date": "2021-04-29",
+      "filter_enum": "Bebida",
+      "type_text": "Mahou",
+      "value_number": 70,
+      "zone_enum": "Bermejales"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 13,
+    "fields": {
+      "search_date": "2021-04-20",
+      "filter_enum": "Bebida",
+      "type_text": "San Miguel",
+      "value_number": 60,
+      "zone_enum": "Cartuja"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 14,
+    "fields": {
+      "search_date": "2021-04-28",
+      "filter_enum": "Bebida",
+      "type_text": "San Miguel",
+      "value_number": 35,
+      "zone_enum": "Nervion"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 15,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Bebida",
+      "type_text": "Heineken",
+      "value_number": 500,
+      "zone_enum": "San Bernardo"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 16,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Bebida",
+      "type_text": "Heineken",
+      "value_number": 420,
+      "zone_enum": null
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 17,
+    "fields": {
+      "search_date": "2021-04-29",
+      "filter_enum": "Bebida",
+      "type_text": "Voll-Damm",
+      "value_number": 35,
+      "zone_enum": "Sevilla Este"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 18,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Bebida",
+      "type_text": "Estrella Galicia",
+      "value_number": 129,
+      "zone_enum": "Exterior"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 19,
+    "fields": {
+      "search_date": "2021-04-24",
+      "filter_enum": "Bebida",
+      "type_text": "Estrella Galicia",
+      "value_number": 69,
+      "zone_enum": "Exterior"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 20,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Bebida",
+      "type_text": "Foster",
+      "value_number": 299,
+      "zone_enum": "Alameda"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 21,
+    "fields": {
+      "search_date": "2021-04-27",
+      "filter_enum": "Bebida",
+      "type_text": "Foster",
+      "value_number": 75,
+      "zone_enum": "Triana"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 22,
+    "fields": {
+      "search_date": "2021-04-21",
+      "filter_enum": "Ocio",
+      "type_text": "Pinball",
+      "value_number": 50,
+      "zone_enum": "Macarena"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 23,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Ocio",
+      "type_text": "Pinball",
+      "value_number": 74,
+      "zone_enum": "Remedios"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 24,
+    "fields": {
+      "search_date": "2021-04-27",
+      "filter_enum": "Ocio",
+      "type_text": "Zona Gaming",
+      "value_number": 154,
+      "zone_enum": "Cartuja"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 25,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Ocio",
+      "type_text": "Zona Gaming",
+      "value_number": 43,
+      "zone_enum": "Bermejales"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 26,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Ocio",
+      "type_text": "Arcade",
+      "value_number": 420,
+      "zone_enum": "Nervion"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 27,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Ocio",
+      "type_text": "Arcade",
+      "value_number": 68,
+      "zone_enum": "San Bernardo"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 28,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Estilo",
+      "type_text": "Cafeteria",
+      "value_number": 1000,
+      "zone_enum": "Sevilla Este"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 29,
+    "fields": {
+      "search_date": "2021-04-27",
+      "filter_enum": "Estilo",
+      "type_text": "Cafeteria",
+      "value_number": 350,
+      "zone_enum": "Exterior"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 30,
+    "fields": {
+      "search_date": "2021-04-27",
+      "filter_enum": "Estilo",
+      "type_text": "Gaming",
+      "value_number": 35,
+      "zone_enum": "Cartuja"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 31,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Estilo",
+      "type_text": "Gaming",
+      "value_number": 58,
+      "zone_enum": "San Bernardo"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 32,
+    "fields": {
+      "search_date": "2021-04-27",
+      "filter_enum": "Estilo",
+      "type_text": "Pub",
+      "value_number": 78,
+      "zone_enum": "San Bernardo"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 33,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Estilo",
+      "type_text": "Pub",
+      "value_number": 156,
+      "zone_enum": "Bermejales"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 34,
+    "fields": {
+      "search_date": "2021-04-24",
+      "filter_enum": "Estilo",
+      "type_text": "Teteria",
+      "value_number": 48,
+      "zone_enum": "Nervion"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 35,
+    "fields": {
+      "search_date": "2021-04-26",
+      "filter_enum": "Estilo",
+      "type_text": "Teteria",
+      "value_number": 14,
+      "zone_enum": "Bermejales"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 36,
+    "fields": {
+      "search_date": "2021-04-21",
+      "filter_enum": "Estilo",
+      "type_text": "Tradicional",
+      "value_number": 45,
+      "zone_enum": "Macarena"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 37,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Estilo",
+      "type_text": "Tradicional",
+      "value_number": 47,
+      "zone_enum": "Bermejales"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 38,
+    "fields": {
+      "search_date": "2021-04-20",
+      "filter_enum": "Ambiente",
+      "type_text": "Familiar",
+      "value_number": 56,
+      "zone_enum": "Nervion"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 39,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Ambiente",
+      "type_text": "Familiar",
+      "value_number": 123,
+      "zone_enum": "San Bernardo"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 40,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Ambiente",
+      "type_text": "Festivo",
+      "value_number": 503,
+      "zone_enum": null
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 41,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Ambiente",
+      "type_text": "Festivo",
+      "value_number": 125,
+      "zone_enum": "San Bernardo"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 42,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Ambiente",
+      "type_text": "Joven",
+      "value_number": 89,
+      "zone_enum": "Remedios"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 43,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Ambiente",
+      "type_text": "Joven",
+      "value_number": 200,
+      "zone_enum": "Nervion"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 44,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Ambiente",
+      "type_text": "Senior",
+      "value_number": 87,
+      "zone_enum": "Exterior"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 45,
+    "fields": {
+      "search_date": "2021-04-20",
+      "filter_enum": "Ambiente",
+      "type_text": "Senior",
+      "value_number": 44,
+      "zone_enum": "Bellavista"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 46,
+    "fields": {
+      "search_date": "2021-04-30",
+      "filter_enum": "Estilo",
+      "type_text": "Terraza",
+      "value_number": 650,
+      "zone_enum": "Cartuja"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 47,
+    "fields": {
+      "search_date": "2021-04-28",
+      "filter_enum": "Estilo",
+      "type_text": "Terraza",
+      "value_number": 212,
+      "zone_enum": "Nervion"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 48,
+    "fields": {
+      "search_date": "2021-04-25",
+      "filter_enum": "Ocio",
+      "type_text": "Cachimba",
+      "value_number": 125,
+      "zone_enum": "Alameda"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 49,
+    "fields": {
+      "search_date": "2021-05-01",
+      "filter_enum": "Ocio",
+      "type_text": "Cachimba",
+      "value_number": 536,
+      "zone_enum": "Triana"
+    }
+  },
+  {
+    "model": "stats.ranking",
+    "pk": 50,
+    "fields": {
+      "search_date": "2021-04-28",
+      "filter_enum": "Bebida",
+      "type_text": "Voll-Damm",
+      "value_number": 45,
+      "zone_enum": "Cartuja"
+    }
+  }
+]
