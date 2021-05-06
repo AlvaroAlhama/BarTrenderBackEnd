@@ -1106,3 +1106,56 @@ class DiscountViewTest(TestCase):
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(prev_discounts, after_discounts)
         self.assertTrue("D020" in str(resp.data["error"]))
+
+class DiscountExpireViewTest(TestCase):
+    
+    def setUp(self):
+        # Users
+        self.owner_user = User.objects.create_user(username='owner@gmail.com', password="vekto1234")
+        self.owner = Owner.objects.create(phone="123456789", user=self.owner_user)
+
+        self.factory = RequestFactory()
+
+        # Establishments
+        self.establishment1 = Establishment.objects.create(
+            name_text="Bar Ejemplo Uno",
+            cif_text="B56316524",
+            phone_number="123456789",
+            zone_enum="Alameda",
+            verified_bool=True,
+            owner=self.owner
+        )
+
+        # Discounts
+        self.discount_one = Discount.objects.create(
+            name_text='Descuento Uno',
+            description_text='Descripción Uno',
+            cost_number=0.5,
+            totalCodes_number=100,
+            scannedCodes_number=100,
+            initial_date=datetime.datetime.now(pytz.utc) + datetime.timedelta(days=1),
+            establishment_id=self.establishment1)
+
+        self.discount_one.initial_date = datetime.datetime.now(pytz.utc) - datetime.timedelta(days=2)
+        self.discount_one.update()  
+
+    def login(self, username):
+        api_call = "/authentication/login"
+        request = self.factory.post(api_call)
+        request.headers = {'apiKey': settings.API_KEY, 'Content-Type': 'application/json'}
+        request._body = json.dumps({"email": str(username), "password":"vekto1234"})
+
+        resp = login.post(self, request)
+
+        return resp.data["token"]
+
+    def test_get_discount_expire_ok(self):
+        token = self.login(self.owner_user.username)
+        request = self.factory.post("<int:establishment_id>/discounts/getExpire")
+        request.headers = {'token': token, 'Content-Type': 'application/json'}
+        url_data = { 'establishment_id':self.establishment1.id }
+
+        resp = Discounts.get(self, request, **url_data)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["results"][0]["name_text"], "Descuento Uno")
