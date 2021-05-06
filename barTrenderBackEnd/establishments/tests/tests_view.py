@@ -1155,7 +1155,7 @@ class DiscountExpireViewTest(TestCase):
         request.headers = {'token': token, 'Content-Type': 'application/json'}
         url_data = { 'establishment_id':self.establishment1.id }
 
-        resp = Discounts.get(self, request, **url_data)
+        resp = ExpireDiscounts.get(self, request, **url_data)
 
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["results"][0]["name_text"], "Descuento Uno")
