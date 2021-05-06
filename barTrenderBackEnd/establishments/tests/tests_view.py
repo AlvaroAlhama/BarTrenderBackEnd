@@ -1151,7 +1151,7 @@ class DiscountExpireViewTest(TestCase):
 
     def test_get_discount_expire_ok(self):
         token = self.login(self.owner_user.username)
-        request = self.factory.post("<int:establishment_id>/discounts/getExpire")
+        request = self.factory.post("<int:establishment_id>/discounts/getExpire?page=1")
         request.headers = {'token': token, 'Content-Type': 'application/json'}
         url_data = { 'establishment_id':self.establishment1.id }
 
