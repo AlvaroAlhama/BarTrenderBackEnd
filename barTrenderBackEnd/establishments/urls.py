@@ -31,5 +31,7 @@ urlpatterns = [
     # Update Discount
     path('<int:establishment_id>/discounts/<int:discount_id>/update', Discounts.as_view()),
     # Delete Discount
-    path('<int:establishment_id>/discounts/<int:discount_id>/delete', Discounts.as_view())
+    path('<int:establishment_id>/discounts/<int:discount_id>/delete', Discounts.as_view()),
+    # Get Discount expired from establishment
+    path('<int:establishment_id>/discounts/getExpire', ExpireDiscounts.as_view())
 ]

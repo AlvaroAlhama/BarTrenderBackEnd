@@ -138,7 +138,7 @@ class Discounts(APIView):
 class DiscountsQR(APIView):
     @token_required("client")
     def get(self, request, establishment_id, discount_id):
-
+        
         # globals params
         token = request.headers["token"]
 
@@ -207,6 +207,29 @@ class ScanDiscount(APIView):
         payment.save()
 
         return Response({"msg": "Éxito al escanear el código QR. Descuento aplicado"}, "200")
+
+class ExpireDiscounts(APIView):
+    @token_required("owner")
+    def get(self, request, establishment_id):
+
+        valid = validate_establishment_owner(establishment_id, get_owner(request))
+        if valid is not None: return valid
+
+        # globals params
+
+        validations = validate_establishment(establishment_id)
+        if validations is not None:
+            return validations
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 7
+
+        discounts = get_expire_discounts(establishment_id)
+
+        context = paginator.paginate_queryset(discounts, request)
+        serializer = DiscountSerializer(context, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
 
 
 class Establishments(APIView):
