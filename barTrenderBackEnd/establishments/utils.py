@@ -194,7 +194,7 @@ def get_valid_discounts(establishment_id, all):
     else:
         return None
 
-    discounts = Discount.objects.filter(result_query)
+    discounts = Discount.objects.filter(result_query).order_by("end_date", F('totalCodes_number')-F('scannedCodes_number'))
 
     return discounts
 
@@ -207,7 +207,7 @@ def get_expire_discounts(establishment_id):
                     Q(end_date__isnull=False, end_date=timezone.now())
                         )
 
-    discounts = Discount.objects.filter(result_query)
+    discounts = Discount.objects.filter(result_query).order_by("end_date", F('totalCodes_number')-F('scannedCodes_number'))
 
     return discounts
 
