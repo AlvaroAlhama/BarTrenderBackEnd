@@ -13,3 +13,4 @@ requests
 google-auth
 cloudinary
 django-cloudinary-storage
+
