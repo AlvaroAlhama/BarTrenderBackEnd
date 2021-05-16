@@ -194,10 +194,22 @@ def get_valid_discounts(establishment_id, all):
     else:
         return None
 
-    discounts = Discount.objects.filter(result_query)
+    discounts = Discount.objects.filter(result_query).order_by("end_date", F('totalCodes_number')-F('scannedCodes_number'))
 
     return discounts
 
+def get_expire_discounts(establishment_id):
+
+    result_query = Q(establishment_id=establishment_id) & \
+                    (Q(totalCodes_number__isnull=False, scannedCodes_number=F('totalCodes_number')) |
+                    Q(totalCodes_number__isnull=False, scannedCodes_number__gt=F('totalCodes_number')) |
+                    Q(end_date__isnull=False, end_date__lt=timezone.now()) |
+                    Q(end_date__isnull=False, end_date=timezone.now())
+                        )
+
+    discounts = Discount.objects.filter(result_query).order_by("end_date", F('totalCodes_number')-F('scannedCodes_number'))
+
+    return discounts
 
 def generate_qr(request, token, host, establishment_id, discount_id):
     # Client
