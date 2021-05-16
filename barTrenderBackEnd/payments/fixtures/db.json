@@ -1,92 +1,92 @@
-﻿[
-    {
-        "model": "payments.payment", 
-        "pk": 1, 
-        "fields": {
-            "pay_date": "2021-06-01", 
-            "scanned_number": 7, 
-            "discount_id": 10
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 2, 
-        "fields": {
-            "pay_date": "2021-06-15", 
-            "scanned_number": 3, 
-            "discount_id": 9
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 3, 
-        "fields": {
-            "pay_date": "2021-05-04", 
-            "scanned_number": 8, 
-            "discount_id": 8
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 4, 
-        "fields": {
-            "pay_date": "2021-05-04", 
-            "scanned_number": 4, 
-            "discount_id": 7
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 5, 
-        "fields": {
-            "pay_date": null, 
-            "scanned_number": 3, 
-            "discount_id": 6
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 6, 
-        "fields": {
-            "pay_date": "2021-05-30", 
-            "scanned_number": 5, 
-            "discount_id": 5
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 7, 
-        "fields": {
-            "pay_date": null, 
-            "scanned_number": 17, 
-            "discount_id": 4
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 8, 
-        "fields": {
-            "pay_date": "2021-05-13", 
-            "scanned_number": 9, 
-            "discount_id": 3
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 9, 
-        "fields": {
-            "pay_date": null, 
-            "scanned_number": 6, 
-            "discount_id": 2
-        }
-    },
-    {
-        "model": "payments.payment", 
-        "pk": 10, 
-        "fields": {
-            "pay_date": null, 
-            "scanned_number": 11, 
-            "discount_id": 1
-        }
+[
+  {
+    "model": "payments.payment",
+    "pk": 1,
+    "fields": {
+      "pay_date": "2021-06-01",
+      "scanned_number": 7,
+      "discount_id": 10
     }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 2,
+    "fields": {
+      "pay_date": "2021-06-15",
+      "scanned_number": 3,
+      "discount_id": 9
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 3,
+    "fields": {
+      "pay_date": "2021-05-04",
+      "scanned_number": 8,
+      "discount_id": 8
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 4,
+    "fields": {
+      "pay_date": "2021-05-04",
+      "scanned_number": 4,
+      "discount_id": 7
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 5,
+    "fields": {
+      "pay_date": null,
+      "scanned_number": 3,
+      "discount_id": 6
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 6,
+    "fields": {
+      "pay_date": "2021-05-30",
+      "scanned_number": 5,
+      "discount_id": 5
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 7,
+    "fields": {
+      "pay_date": null,
+      "scanned_number": 17,
+      "discount_id": 4
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 8,
+    "fields": {
+      "pay_date": "2021-05-13",
+      "scanned_number": 9,
+      "discount_id": 3
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 9,
+    "fields": {
+      "pay_date": null,
+      "scanned_number": 6,
+      "discount_id": 2
+    }
+  },
+  {
+    "model": "payments.payment",
+    "pk": 10,
+    "fields": {
+      "pay_date": null,
+      "scanned_number": 11,
+      "discount_id": 1
+    }
+  }
 ]
