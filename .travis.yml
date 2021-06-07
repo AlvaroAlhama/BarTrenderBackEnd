@@ -21,7 +21,7 @@ script:
   - python-codacy-coverage -r coverage.xml
 deploy:
   - provider: heroku
-    app: main-backend-ppl
+    app: bartrenderoficial
     strategy: git
     api_key: $HEROKU_API_KEY
     on:
